@@ -4,6 +4,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
 import android.text.TextUtils;
+import android.util.Log;
 import com.richzjc.rdownload.anotation.ProgressSubscribe;
 import com.richzjc.rdownload.anotation.SizeChangeSubscribe;
 import com.richzjc.rdownload.model.RefreshDataModel;
@@ -53,6 +54,7 @@ public class EventBus {
     public void register(Object obj) {
         registerProgressSubscribe(obj);
         registerSizeChangeSubscribe(obj);
+        Log.e("cache", cacheMap.size() + "");
     }
 
     private void registerProgressSubscribe(Object obj) {
@@ -138,6 +140,7 @@ public class EventBus {
     public void unRegister(Object obj) {
         unregisterProgressSubscribe(obj);
         unregisterSizeChangeSubscribe(obj);
+        Log.e("cache", cacheMap.size() + "; unregister");
     }
 
     private void unregisterProgressSubscribe(Object obj){
