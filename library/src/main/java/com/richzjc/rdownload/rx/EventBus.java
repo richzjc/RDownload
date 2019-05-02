@@ -123,7 +123,7 @@ public class EventBus {
                     continue;
                 else {
                     Class<?>[] types = method.getParameterTypes();
-                    if (types != null && types.length == 1 && TextUtils.equals("int", types[0].getSimpleName())) {
+                    if (types != null && types.length == 1) {
                         result = method;
                         break;
                     }
