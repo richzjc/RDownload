@@ -1,46 +1,45 @@
 package com.richzjc.rdownload.config;
 
 import com.richzjc.rdownload.callback.ParentTaskCallback;
+import com.richzjc.rdownload.manager.ThreadPoolManager;
+import com.richzjc.rdownload.wrapper.DataHandleWrapper;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.LinkedBlockingQueue;
 
 public class Confirguration {
 
-    LinkedBlockingQueue<ParentTaskCallback> queue;
+    List<ParentTaskCallback> mDatas;
     List<ParentTaskCallback> pauseAndErrorList;
+    ThreadPoolManager poolManager;
+    DataHandleWrapper wrapper;
     private String key;
 
     public Confirguration(String key) {
         this.key = key;
-        queue = new LinkedBlockingQueue<>();
+        mDatas = new ArrayList<>();
+        poolManager = ThreadPoolManager.getInstance(key);
         pauseAndErrorList = new ArrayList<>();
+        wrapper = new DataHandleWrapper(mDatas, pauseAndErrorList);
     }
 
     public void addParentTask(ParentTaskCallback parentTask) {
-        if(parentTask != null) {
-            if(contains(parentTask)){
-
-            }else{
-                boolean isSuccess = queue.offer(parentTask);
-                if(isSuccess){
-                    //TODO 通知刷新界面
-                }
-            }
-        }
+        wrapper.addParentTask(parentTask);
     }
 
-    public void pauseParentTask(String parentTaskId) {
+    public void addParentTasks(List<ParentTaskCallback> parentTasks){
+        wrapper.addParentTasks(parentTasks);
+    }
 
+    public void pauseParentTask(ParentTaskCallback parentTask) {
+        wrapper.pauseParentTask(parentTask);
+    }
+
+    public void pauseParentTasks(List<ParentTaskCallback> parentTasks){
+        wrapper.pauseParentTasks(parentTasks);
     }
 
     private boolean contains(ParentTaskCallback ptc){
-        if(queue.contains(ptc))
-            return true;
-        else if(pauseAndErrorList.contains(ptc)){
-            return true;
-        }else
-            return false;
+        return wrapper.contains(ptc);
     }
 }
