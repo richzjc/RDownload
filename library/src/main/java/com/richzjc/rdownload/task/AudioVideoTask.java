@@ -1,8 +1,7 @@
 package com.richzjc.rdownload.task;
 
-import com.richzjc.rdownload.callback.RunTaskCallback;
 
-public class AudioVideoTask implements RunTaskCallback {
+public class AudioVideoTask implements Runnable {
 
     @Override
     public void run() {

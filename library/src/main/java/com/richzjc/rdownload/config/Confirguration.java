@@ -1,6 +1,7 @@
 package com.richzjc.rdownload.config;
 
 import com.richzjc.rdownload.callback.ParentTaskCallback;
+import com.richzjc.rdownload.constant.NetworkType;
 import com.richzjc.rdownload.manager.ThreadPoolManager;
 import com.richzjc.rdownload.wrapper.DataHandleWrapper;
 
@@ -14,9 +15,11 @@ public class Confirguration {
     ThreadPoolManager poolManager;
     DataHandleWrapper wrapper;
     private String key;
+    private NetworkType networkType;
 
-    public Confirguration(String key) {
+    public Confirguration(String key, NetworkType networkType) {
         this.key = key;
+        this.networkType = networkType;
         mDatas = new ArrayList<>();
         poolManager = ThreadPoolManager.getInstance(key, mDatas);
         pauseAndErrorList = new ArrayList<>();

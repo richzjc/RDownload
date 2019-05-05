@@ -28,9 +28,16 @@ public class RDownloadManager {
         if(map.containsKey(key)){
             return map.get(key);
         }else{
-            Confirguration confirguration = new Confirguration(key);
-            map.put(key, confirguration);
-            return confirguration;
+           return null;
+        }
+    }
+
+    public void setConfiguration(String configurationKey, Confirguration confirguration){
+        if(map.containsKey(configurationKey)){
+            map.remove(configurationKey);
+            map.put(configurationKey, confirguration);
+        }else{
+            map.put(configurationKey, confirguration);
         }
     }
 }
