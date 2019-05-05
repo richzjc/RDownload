@@ -12,7 +12,7 @@ public class ThreadPoolManager {
 
     private static HashMap<String, ThreadPoolManager> map;
     private LinkedBlockingQueue<Runnable> queue;
-    private ThreadPoolExecutor poolExecutor;
+    private ExecutorService poolExecutor;
     private ParentTaskCallback parentTaskCallback;
     private List<ParentTaskCallback> mDatas;
     private ConfigurationParamsModel paramsModel;
@@ -33,12 +33,7 @@ public class ThreadPoolManager {
         this.mDatas = mDatas;
         this.paramsModel = paramsModel;
         queue = new LinkedBlockingQueue<>();
-        poolExecutor = new ThreadPoolExecutor(1, 2, 5, TimeUnit.SECONDS, new LinkedBlockingDeque<Runnable>(), new RejectedExecutionHandler() {
-            @Override
-            public void rejectedExecution(Runnable r, ThreadPoolExecutor executor) {
-                //addTask(r);
-            }
-        });
+        poolExecutor = Executors.newSingleThreadExecutor();
         init();
 
     }
@@ -52,8 +47,8 @@ public class ThreadPoolManager {
                 while (true) {
                     try {
                         int size = queue.size();
-                        if(size == 0){
-
+                        if(size == 0 && mDatas.size() > 0){
+                            addTask(mDatas.get(0));
                         }
                         runnable = queue.take();
                     } catch (InterruptedException e) {
@@ -64,7 +59,7 @@ public class ThreadPoolManager {
                 }
             }
         };
-        poolExecutor.execute(coreRunnable);
+        new Thread(coreRunnable).start();
     }
 
 
