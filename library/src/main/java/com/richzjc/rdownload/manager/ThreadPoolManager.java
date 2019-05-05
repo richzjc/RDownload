@@ -1,6 +1,7 @@
 package com.richzjc.rdownload.manager;
 
 import com.richzjc.rdownload.callback.ParentTaskCallback;
+import com.richzjc.rdownload.model.ConfigurationParamsModel;
 import com.richzjc.rdownload.util.TaskUtils;
 
 import java.util.HashMap;
@@ -14,21 +15,23 @@ public class ThreadPoolManager {
     private ThreadPoolExecutor poolExecutor;
     private ParentTaskCallback parentTaskCallback;
     private List<ParentTaskCallback> mDatas;
+    private ConfigurationParamsModel paramsModel;
 
-    public static ThreadPoolManager getInstance(String configurationKey, List<ParentTaskCallback> mDatas) {
+    public static ThreadPoolManager getInstance(String configurationKey, List<ParentTaskCallback> mDatas, ConfigurationParamsModel paramsModel) {
         if (map == null)
             map = new HashMap<>();
         if (map.containsKey(configurationKey))
             return map.get(configurationKey);
         else {
-            ThreadPoolManager poolManager = new ThreadPoolManager(mDatas);
+            ThreadPoolManager poolManager = new ThreadPoolManager(mDatas, paramsModel);
             map.put(configurationKey, poolManager);
             return poolManager;
         }
     }
 
-    private ThreadPoolManager(List<ParentTaskCallback> mDatas) {
+    private ThreadPoolManager(List<ParentTaskCallback> mDatas, ConfigurationParamsModel paramsModel) {
         this.mDatas = mDatas;
+        this.paramsModel = paramsModel;
         queue = new LinkedBlockingQueue<>();
         poolExecutor = new ThreadPoolExecutor(1, 2, 5, TimeUnit.SECONDS, new LinkedBlockingDeque<Runnable>(), new RejectedExecutionHandler() {
             @Override

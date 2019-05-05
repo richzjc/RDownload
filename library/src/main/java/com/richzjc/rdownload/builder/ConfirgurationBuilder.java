@@ -4,6 +4,7 @@ import com.richzjc.rdownload.callback.DownloadCompleteCallback;
 import com.richzjc.rdownload.callback.GetSaveModelCallback;
 import com.richzjc.rdownload.config.Confirguration;
 import com.richzjc.rdownload.constant.NetworkType;
+import com.richzjc.rdownload.model.ConfigurationParamsModel;
 
 public class ConfirgurationBuilder {
 
@@ -33,6 +34,10 @@ public class ConfirgurationBuilder {
     }
 
     public Confirguration build() {
-        return new Confirguration(configurationKey, networkType, completeCallback, saveModelCallback);
+        ConfigurationParamsModel paramsModel = new ConfigurationParamsModel();
+        paramsModel.networkType = networkType;
+        paramsModel.completeCallback = completeCallback;
+        paramsModel.saveModelCallback = saveModelCallback;
+        return new Confirguration(configurationKey, paramsModel);
     }
 }

@@ -5,6 +5,7 @@ import com.richzjc.rdownload.callback.GetSaveModelCallback;
 import com.richzjc.rdownload.callback.ParentTaskCallback;
 import com.richzjc.rdownload.constant.NetworkType;
 import com.richzjc.rdownload.manager.ThreadPoolManager;
+import com.richzjc.rdownload.model.ConfigurationParamsModel;
 import com.richzjc.rdownload.wrapper.DataHandleWrapper;
 import java.util.ArrayList;
 import java.util.List;
@@ -16,17 +17,11 @@ public class Confirguration {
     ThreadPoolManager poolManager;
     DataHandleWrapper wrapper;
     private String key;
-    private NetworkType networkType;
-    private DownloadCompleteCallback completeCallback;
-    private GetSaveModelCallback saveModelCallback;
 
-    public Confirguration(String key, NetworkType networkType, DownloadCompleteCallback completeCallback, GetSaveModelCallback saveModelCallback) {
+    public Confirguration(String key, ConfigurationParamsModel paramsModel) {
         this.key = key;
-        this.networkType = networkType;
-        this.completeCallback = completeCallback;
-        this.saveModelCallback = saveModelCallback;
         mDatas = new ArrayList<>();
-        poolManager = ThreadPoolManager.getInstance(key, mDatas);
+        poolManager = ThreadPoolManager.getInstance(key, mDatas, paramsModel);
         pauseAndErrorList = new ArrayList<>();
         wrapper = new DataHandleWrapper(key, mDatas, pauseAndErrorList);
     }
