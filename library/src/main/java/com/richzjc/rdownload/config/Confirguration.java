@@ -18,9 +18,9 @@ public class Confirguration {
     public Confirguration(String key) {
         this.key = key;
         mDatas = new ArrayList<>();
-        poolManager = ThreadPoolManager.getInstance(key);
+        poolManager = ThreadPoolManager.getInstance(key, mDatas);
         pauseAndErrorList = new ArrayList<>();
-        wrapper = new DataHandleWrapper(mDatas, pauseAndErrorList);
+        wrapper = new DataHandleWrapper(key, mDatas, pauseAndErrorList);
     }
 
     public void addParentTask(ParentTaskCallback parentTask) {
