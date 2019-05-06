@@ -31,12 +31,12 @@ public class RDownloadManager {
         }
     }
 
-    public void setConfiguration(String configurationKey, Confirguration confirguration){
-        if(map.containsKey(configurationKey)){
-            map.remove(configurationKey);
-            map.put(configurationKey, confirguration);
+    public void setConfiguration(Confirguration confirguration){
+        if(map.containsKey(confirguration.key)){
+            map.remove(confirguration.key);
+            map.put(confirguration.key, confirguration);
         }else{
-            map.put(configurationKey, confirguration);
+            map.put(confirguration.key, confirguration);
         }
     }
 }

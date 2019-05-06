@@ -16,7 +16,7 @@ public class Confirguration {
     List<ParentTaskCallback> pauseAndErrorList;
     ThreadPoolManager poolManager;
     DataHandleWrapper wrapper;
-    private String key;
+    public String key;
 
     public Confirguration(String key, ConfigurationParamsModel paramsModel) {
         this.key = key;
