@@ -1,4 +1,4 @@
-package com.richzjc.rdownload.constant;
+package com.richzjc.rdownload.download.constant;
 
 public class DownloadConstance {
     public static final int WAITING = 0;

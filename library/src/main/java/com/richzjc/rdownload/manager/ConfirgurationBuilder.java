@@ -1,10 +1,9 @@
-package com.richzjc.rdownload.builder;
+package com.richzjc.rdownload.manager;
 
-import com.richzjc.rdownload.callback.DownloadCompleteCallback;
-import com.richzjc.rdownload.callback.GetSaveModelCallback;
-import com.richzjc.rdownload.config.Confirguration;
-import com.richzjc.rdownload.constant.NetworkType;
-import com.richzjc.rdownload.model.ConfigurationParamsModel;
+import com.richzjc.rdownload.notification.callback.DownloadCompleteCallback;
+import com.richzjc.rdownload.notification.callback.GetSaveModelCallback;
+import com.richzjc.rdownload.download.constant.NetworkType;
+import com.richzjc.rdownload.data.model.ConfigurationParamsModel;
 
 public class ConfirgurationBuilder {
 

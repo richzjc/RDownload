@@ -1,6 +1,6 @@
-package com.richzjc.rdownload.util;
+package com.richzjc.rdownload.download.util;
 
-import com.richzjc.rdownload.callback.ParentTaskCallback;
+import com.richzjc.rdownload.notification.callback.ParentTaskCallback;
 
 import java.util.ArrayList;
 import java.util.List;

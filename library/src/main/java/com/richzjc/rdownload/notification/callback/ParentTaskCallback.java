@@ -1,6 +1,6 @@
-package com.richzjc.rdownload.callback;
+package com.richzjc.rdownload.notification.callback;
 
-import com.richzjc.rdownload.model.ProgressStatusModel;
+import com.richzjc.rdownload.data.model.ProgressStatusModel;
 
 import java.util.List;
 

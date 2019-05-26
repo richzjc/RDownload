@@ -1,12 +1,10 @@
-package com.richzjc.rdownload.config;
+package com.richzjc.rdownload.manager;
 
-import com.richzjc.rdownload.callback.DownloadCompleteCallback;
-import com.richzjc.rdownload.callback.GetSaveModelCallback;
-import com.richzjc.rdownload.callback.ParentTaskCallback;
-import com.richzjc.rdownload.constant.NetworkType;
+import com.richzjc.rdownload.notification.callback.ParentTaskCallback;
 import com.richzjc.rdownload.manager.ThreadPoolManager;
-import com.richzjc.rdownload.model.ConfigurationParamsModel;
-import com.richzjc.rdownload.wrapper.DataHandleWrapper;
+import com.richzjc.rdownload.data.model.ConfigurationParamsModel;
+import com.richzjc.rdownload.data.wrapper.DataHandleWrapper;
+
 import java.util.ArrayList;
 import java.util.List;
 

@@ -1,4 +1,4 @@
-package com.richzjc.rdownload.task;
+package com.richzjc.rdownload.download.task;
 
 
 public class AudioVideoTask implements Runnable {

@@ -1,4 +1,4 @@
-package com.richzjc.rdownload.model;
+package com.richzjc.rdownload.data.model;
 
 import android.os.Parcel;
 import android.os.Parcelable;

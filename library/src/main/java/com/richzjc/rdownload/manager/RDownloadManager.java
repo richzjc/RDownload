@@ -1,6 +1,5 @@
 package com.richzjc.rdownload.manager;
 
-import com.richzjc.rdownload.config.Confirguration;
 import java.util.HashMap;
 
 public class RDownloadManager {

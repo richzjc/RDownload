@@ -1,8 +1,6 @@
-package com.richzjc.rdownload.model;
+package com.richzjc.rdownload.data.model;
 
 import android.os.Environment;
-import android.os.Handler;
-import android.os.Looper;
 import android.text.TextUtils;
 
 import java.io.File;

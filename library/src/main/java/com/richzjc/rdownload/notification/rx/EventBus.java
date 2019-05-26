@@ -1,13 +1,13 @@
-package com.richzjc.rdownload.rx;
+package com.richzjc.rdownload.notification.rx;
 
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
 import android.text.TextUtils;
 import android.util.Log;
-import com.richzjc.rdownload.anotation.ProgressSubscribe;
-import com.richzjc.rdownload.anotation.SizeChangeSubscribe;
-import com.richzjc.rdownload.model.RefreshDataModel;
+import com.richzjc.rdownload.notification.anotation.ProgressSubscribe;
+import com.richzjc.rdownload.notification.anotation.SizeChangeSubscribe;
+import com.richzjc.rdownload.data.model.RefreshDataModel;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;

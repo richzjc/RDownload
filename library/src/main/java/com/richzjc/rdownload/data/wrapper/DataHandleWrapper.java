@@ -1,6 +1,6 @@
-package com.richzjc.rdownload.wrapper;
+package com.richzjc.rdownload.data.wrapper;
 
-import com.richzjc.rdownload.callback.ParentTaskCallback;
+import com.richzjc.rdownload.notification.callback.ParentTaskCallback;
 import java.util.List;
 
 public class DataHandleWrapper {

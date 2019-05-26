@@ -1,8 +1,8 @@
 package com.richzjc.rdownload;
 
 import android.text.TextUtils;
-import com.richzjc.rdownload.callback.ParentTaskCallback;
-import com.richzjc.rdownload.model.ProgressStatusModel;
+import com.richzjc.rdownload.notification.callback.ParentTaskCallback;
+import com.richzjc.rdownload.data.model.ProgressStatusModel;
 
 import java.util.ArrayList;
 import java.util.List;
