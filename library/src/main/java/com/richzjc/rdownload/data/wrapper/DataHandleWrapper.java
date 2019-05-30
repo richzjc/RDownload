@@ -19,6 +19,8 @@ public class DataHandleWrapper {
         mDatas.remove(parentTask);
         pauseAndErrorList.remove(parentTask);
         mDatas.add(parentTask);
+        //TODO 标记为等待缓存， 通过注解回调回去，
+        // TODO 并且更新实体类的状态，状态也根据注解，反射去更新
     }
 
     public void addParentTasks(List<ParentTaskCallback> parentTasks) {
@@ -34,6 +36,9 @@ public class DataHandleWrapper {
             mDatas.remove(parentTask);
             pauseAndErrorList.remove(parentTask);
             pauseAndErrorList.add(parentTask);
+            //TODO 标记为暂停状态， 并且通过注解回调回去更新界面的展示，
+            // TODO 通过注解更新实体类的属性，
+            //  TODO 从线程池里面暂停当前使用的这个类
         }
     }
 
