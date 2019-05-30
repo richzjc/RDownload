@@ -3,6 +3,7 @@ package com.richzjc.rdownload.data.model;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+//TODO 状态属性的更新 希望能通过注解反射去修改， 这个类到时候就直接干掉
 public class ProgressStatusModel implements Parcelable {
     public String parentTaskId;
     public int progress;

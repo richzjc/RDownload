@@ -1,5 +1,6 @@
 package com.richzjc.rdownload.manager;
 
+import com.richzjc.rdownload.download.constant.NetworkType;
 import com.richzjc.rdownload.notification.callback.ParentTaskCallback;
 import com.richzjc.rdownload.data.model.ConfigurationParamsModel;
 import com.richzjc.rdownload.data.wrapper.DataHandleWrapper;
@@ -47,5 +48,9 @@ public class Confirguration {
 
     private boolean contains(ParentTaskCallback ptc){
         return wrapper.contains(ptc);
+    }
+
+    public void setNetWorkType(NetworkType netWorkType){
+        //TODO 根据这个networkType 要去修改是继续下载 还是暂停下载
     }
 }

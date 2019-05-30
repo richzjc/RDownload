@@ -20,10 +20,6 @@ class MainActivity : AppCompatActivity() {
         val configration = ConfirgurationBuilder()
             .setNetWorkType(NetworkType.WIFI)
             .setConfigurationKey("test")
-            .setDownloadCompleteCallback(null)
-            .setGetSaveModelCallback {
-                return@setGetSaveModelCallback null
-            }
             .build()
         RDownloadManager.getInstance().setConfiguration(configration)
 
