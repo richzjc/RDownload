@@ -2,6 +2,9 @@ package com.richzjc.rdownload.manager;
 
 import java.util.HashMap;
 
+/**
+ *下载的单例类
+ */
 public class RDownloadManager {
     private static volatile RDownloadManager instance;
     private HashMap<String, Confirguration> map;
