@@ -1,8 +1,11 @@
 package com.richzjc.rdownload.download.task;
 
+import okhttp3.OkHttpClient;
+
 final class OkhttpDownload {
 
     private static volatile OkhttpDownload instance;
+    private OkHttpClient okHttpClient;
 
     public OkhttpDownload getInstance(){
         if(instance == null){
@@ -15,6 +18,10 @@ final class OkhttpDownload {
     }
 
     private OkhttpDownload(){
+        okHttpClient = new OkHttpClient.Builder().build();
+    }
+
+    public void download(String url){
 
     }
 }

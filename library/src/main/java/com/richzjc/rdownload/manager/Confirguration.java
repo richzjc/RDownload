@@ -16,17 +16,15 @@ import java.util.List;
  */
 public class Confirguration {
 
-    List<ParentTaskCallback> mDatas;
-    List<ParentTaskCallback> pauseAndErrorList;
-    ThreadPoolManager poolManager;
-    DataHandleWrapper wrapper;
-    public String key;
+   private ThreadPoolManager poolManager;
+   private DataHandleWrapper wrapper;
+   private ConfigurationParamsModel paramsModel;
 
     public Confirguration(String key, ConfigurationParamsModel paramsModel) {
-        this.key = key;
-        mDatas = new ArrayList<>();
+        this.paramsModel = paramsModel;
+        List<ParentTaskCallback> mDatas = new ArrayList<>();
         poolManager = ThreadPoolManager.getInstance(key, mDatas, paramsModel);
-        pauseAndErrorList = new ArrayList<>();
+        List<ParentTaskCallback> pauseAndErrorList = new ArrayList<>();
         wrapper = new DataHandleWrapper(key, mDatas, pauseAndErrorList);
     }
 
@@ -34,7 +32,7 @@ public class Confirguration {
         wrapper.addParentTask(parentTask);
     }
 
-    public void addParentTasks(List<ParentTaskCallback> parentTasks){
+    public void addParentTasks(List<ParentTaskCallback> parentTasks) {
         wrapper.addParentTasks(parentTasks);
     }
 
@@ -42,15 +40,17 @@ public class Confirguration {
         wrapper.pauseParentTask(parentTask);
     }
 
-    public void pauseParentTasks(List<ParentTaskCallback> parentTasks){
+    public void pauseParentTasks(List<ParentTaskCallback> parentTasks) {
         wrapper.pauseParentTasks(parentTasks);
     }
 
-    private boolean contains(ParentTaskCallback ptc){
+    private boolean contains(ParentTaskCallback ptc) {
         return wrapper.contains(ptc);
     }
 
-    public void setNetWorkType(NetworkType netWorkType){
-        //TODO 根据这个networkType 要去修改是继续下载 还是暂停下载
+    public void setNetWorkType(NetworkType netWorkType) {
+        //TODO 根据这个networkType 如果不符合条件 则要暂停去下载
+        paramsModel.networkType = netWorkType;
+
     }
 }
