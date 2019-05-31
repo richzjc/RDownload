@@ -1,6 +1,7 @@
 package com.richzjc.rdownload.manager;
 
 import com.richzjc.rdownload.data.model.ConfigurationParamsModel;
+import com.richzjc.rdownload.download.task.IDownload;
 import com.richzjc.rdownload.download.util.TaskUtils;
 import com.richzjc.rdownload.notification.callback.ParentTaskCallback;
 import java.util.HashMap;
@@ -13,7 +14,7 @@ import java.util.concurrent.locks.ReentrantLock;
 public class ThreadPoolManager {
 
     private static HashMap<String, ThreadPoolManager> map;
-    private LinkedBlockingQueue<Runnable> queue;
+    private LinkedBlockingQueue<IDownload> queue;
     private ParentTaskCallback parentTaskCallback;
     private List<ParentTaskCallback> mDatas;
     private ConfigurationParamsModel paramsModel;
@@ -59,7 +60,7 @@ public class ThreadPoolManager {
                             }
                         }
                         try {
-                            Runnable runnable = queue.take();
+                            IDownload runnable = queue.take();
                             runnable.run();
                         } catch (InterruptedException e) {
                             e.printStackTrace();
@@ -86,7 +87,7 @@ public class ThreadPoolManager {
             //TODO 1、刷新界面，通过注解去刷新界面
             //TODO 2、更新对应实体的属性，主要有进度， 状态，通过注解就可以去完成了
             this.parentTaskCallback = mDatas.get(0);
-            List<Runnable> tasks = TaskUtils.getAllTasks(parentTaskCallback);
+            List<IDownload> tasks = TaskUtils.getAllTasks(parentTaskCallback);
             queue.addAll(tasks);
             emptyCondition.signalAll();
         } else {
