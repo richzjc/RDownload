@@ -4,4 +4,5 @@ import com.richzjc.rdownload.download.constant.NetworkType;
 
 public class ConfigurationParamsModel {
     public NetworkType networkType;
+    public String downloadFolder;
 }

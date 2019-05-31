@@ -9,7 +9,9 @@ public class TaskUtils {
     public static List<Runnable> getAllTasks(ParentTaskCallback taskCallback){
         List<Runnable> tasks = new ArrayList<>();
         if(taskCallback != null){
-            //TODO 组织数据添加到下载队列里面去
+           for(String url : taskCallback.getDownloadUrls()){
+
+           }
         }
         return tasks;
     }

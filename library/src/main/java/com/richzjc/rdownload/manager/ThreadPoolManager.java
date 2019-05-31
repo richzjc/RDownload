@@ -3,7 +3,6 @@ package com.richzjc.rdownload.manager;
 import com.richzjc.rdownload.data.model.ConfigurationParamsModel;
 import com.richzjc.rdownload.download.util.TaskUtils;
 import com.richzjc.rdownload.notification.callback.ParentTaskCallback;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.LinkedBlockingQueue;

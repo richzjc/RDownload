@@ -19,6 +19,7 @@ public class DataHandleWrapper {
         mDatas.remove(parentTask);
         pauseAndErrorList.remove(parentTask);
         mDatas.add(parentTask);
+        //TODO 入库，判断数据库里面是否存在
         //TODO 标记为等待缓存， 通过注解回调回去，
         // TODO 并且更新实体类的状态，状态也根据注解，反射去更新
     }

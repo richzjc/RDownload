@@ -6,6 +6,7 @@ import com.richzjc.rdownload.data.model.ConfigurationParamsModel;
 public class ConfirgurationBuilder {
 
     private NetworkType networkType = NetworkType.WIFI;
+    private String downloadFolder;
     private String configurationKey;
 
     public ConfirgurationBuilder setNetWorkType(NetworkType workType) {
@@ -18,9 +19,15 @@ public class ConfirgurationBuilder {
         return this;
     }
 
+    public ConfirgurationBuilder setDownloadFolder(String folder){
+        this.downloadFolder = folder;
+        return this;
+    }
+
     public Confirguration build() {
         ConfigurationParamsModel paramsModel = new ConfigurationParamsModel();
         paramsModel.networkType = networkType;
+        paramsModel.downloadFolder = downloadFolder;
         return new Confirguration(configurationKey, paramsModel);
     }
 }
