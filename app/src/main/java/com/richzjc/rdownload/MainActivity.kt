@@ -1,5 +1,6 @@
 package com.richzjc.rdownload
 
+import android.graphics.Color
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log
@@ -25,6 +26,8 @@ class MainActivity : AppCompatActivity() {
 
         EventBus.getInstance().register(this)
         init()
+
+        window.navigationBarColor = Color.parseColor("#1482f0")
     }
 
     private fun init(){
