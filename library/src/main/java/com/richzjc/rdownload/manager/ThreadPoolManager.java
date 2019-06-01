@@ -4,13 +4,9 @@ import com.richzjc.rdownload.data.model.ConfigurationParamsModel;
 import com.richzjc.rdownload.download.task.IDownload;
 import com.richzjc.rdownload.download.util.TaskUtils;
 import com.richzjc.rdownload.notification.callback.ParentTaskCallback;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.locks.Condition;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 
 public class ThreadPoolManager {
 
