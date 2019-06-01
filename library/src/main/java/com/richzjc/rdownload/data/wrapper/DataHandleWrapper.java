@@ -2,14 +2,15 @@ package com.richzjc.rdownload.data.wrapper;
 
 import com.richzjc.rdownload.notification.callback.ParentTaskCallback;
 import java.util.List;
+import java.util.concurrent.LinkedBlockingQueue;
 
 public class DataHandleWrapper {
 
-    private List<ParentTaskCallback> mDatas;
+    private LinkedBlockingQueue<ParentTaskCallback> mDatas;
     private List<ParentTaskCallback> pauseAndErrorList;
     private String key;
 
-    public DataHandleWrapper(String key, List<ParentTaskCallback> mDatas, List<ParentTaskCallback> pauseAndErrorList){
+    public DataHandleWrapper(String key, LinkedBlockingQueue<ParentTaskCallback> mDatas, List<ParentTaskCallback> pauseAndErrorList){
         this.key = key;
         this.mDatas = mDatas;
         this.pauseAndErrorList = pauseAndErrorList;

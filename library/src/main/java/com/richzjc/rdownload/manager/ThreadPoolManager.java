@@ -4,6 +4,7 @@ import com.richzjc.rdownload.data.model.ConfigurationParamsModel;
 import com.richzjc.rdownload.download.task.IDownload;
 import com.richzjc.rdownload.download.util.TaskUtils;
 import com.richzjc.rdownload.notification.callback.ParentTaskCallback;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -16,12 +17,10 @@ public class ThreadPoolManager {
     private static HashMap<String, ThreadPoolManager> map;
     private LinkedBlockingQueue<IDownload> queue;
     private ParentTaskCallback parentTaskCallback;
-    private List<ParentTaskCallback> mDatas;
+    private LinkedBlockingQueue<ParentTaskCallback> mDatas;
     private ConfigurationParamsModel paramsModel;
-    private Lock lock;
-    private Condition emptyCondition;
 
-    public static ThreadPoolManager getInstance(String configurationKey, List<ParentTaskCallback> mDatas, ConfigurationParamsModel paramsModel) {
+    public static ThreadPoolManager getInstance(String configurationKey, LinkedBlockingQueue<ParentTaskCallback> mDatas, ConfigurationParamsModel paramsModel) {
         if (map == null)
             map = new HashMap<>();
         if (map.containsKey(configurationKey))
@@ -33,12 +32,10 @@ public class ThreadPoolManager {
         }
     }
 
-    private ThreadPoolManager(List<ParentTaskCallback> mDatas, ConfigurationParamsModel paramsModel) {
+    private ThreadPoolManager(LinkedBlockingQueue<ParentTaskCallback> mDatas, ConfigurationParamsModel paramsModel) {
         this.mDatas = mDatas;
         this.paramsModel = paramsModel;
         queue = new LinkedBlockingQueue<>();
-        this.lock = new ReentrantLock();
-        this.emptyCondition = lock.newCondition();
         init();
 
     }
@@ -47,34 +44,24 @@ public class ThreadPoolManager {
         new Thread() {
             @Override
             public void run() {
-                try {
-                    while (true) {
-                        lock.lock();
-                        if (queue.isEmpty()) {
-                            saveCurrentDownloadStatus();
-                            addNextTask();
-                            try {
-                                emptyCondition.await();
-                            } catch (InterruptedException e) {
-                                e.printStackTrace();
-                            }
-                        }
-                        try {
-                            IDownload runnable = queue.take();
-                            runnable.run();
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
+                while (true) {
+                    if (queue.isEmpty()) {
+                        saveCurrentDownloadStatus();
+                        addNextTask();
                     }
-                } finally {
-                    lock.unlock();
+                    try {
+                        IDownload runnable = queue.take();
+                        runnable.run();
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
                 }
             }
         }.start();
     }
 
     private void saveCurrentDownloadStatus() {
-        if(parentTaskCallback != null){
+        if (parentTaskCallback != null) {
             //TODO 判断是下载完成了，还是下载失败了，两种对应逻辑的处理
             //关键点在于怎么去判断 是下载完成了 还是下载失败了，或者是暂停了
         }
@@ -82,16 +69,15 @@ public class ThreadPoolManager {
 
 
     public void addNextTask() {
-        if (mDatas != null && mDatas.size() > 0) {
-            //TODO 标记进行到下载的逻辑，则要
-            //TODO 1、刷新界面，通过注解去刷新界面
-            //TODO 2、更新对应实体的属性，主要有进度， 状态，通过注解就可以去完成了
-            this.parentTaskCallback = mDatas.get(0);
+        //TODO 标记进行到下载的逻辑，则要
+        //TODO 1、刷新界面，通过注解去刷新界面
+        //TODO 2、更新对应实体的属性，主要有进度， 状态，通过注解就可以去完成了
+        try {
+            this.parentTaskCallback = mDatas.take();
             List<IDownload> tasks = TaskUtils.getAllTasks(parentTaskCallback);
             queue.addAll(tasks);
-            emptyCondition.signalAll();
-        } else {
-            this.parentTaskCallback = null;
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
     }
 }

@@ -11,6 +11,7 @@ public class ParentTaskModel implements ParentTaskCallback {
     public List<String> getDownloadUrls() {
         List<String> list = new ArrayList<>();
         list.add("https://premium.wallstcn.com/3a61745a-2a79-41d1-9c10-a56a899c0b4e.mp3");
+        list.add("http://k.zol-img.com.cn/sjbbs/7692/a7691515_s.jpg");
         return list;
     }
 

@@ -1,7 +1,6 @@
 package com.richzjc.rdownload.download.task;
 
 
-import com.kronos.download.DownloadConstants;
 
 public class AudioVideoTask implements Runnable {
 

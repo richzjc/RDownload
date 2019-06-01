@@ -33,16 +33,6 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    @ProgressSubscribe(configurationKey="test")
-    fun getType(obj : ProgressStatusModel?){
-        Log.i("test", "isSuccess")
-    }
-
-    @SizeChangeSubscribe(configurationKey = "test")
-    fun testlength(size : Int){
-        Log.i("test", "length = $size");
-    }
-
     override fun onDestroy() {
         super.onDestroy()
         EventBus.getInstance().unRegister(this)

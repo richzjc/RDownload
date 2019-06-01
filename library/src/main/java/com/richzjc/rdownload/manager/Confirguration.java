@@ -7,6 +7,7 @@ import com.richzjc.rdownload.data.wrapper.DataHandleWrapper;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.LinkedBlockingQueue;
 
 /**
  * 该类是一个配置项，
@@ -19,10 +20,12 @@ public class Confirguration {
    private ThreadPoolManager poolManager;
    private DataHandleWrapper wrapper;
    private ConfigurationParamsModel paramsModel;
+   public String key;
 
     public Confirguration(String key, ConfigurationParamsModel paramsModel) {
+        this.key = key;
         this.paramsModel = paramsModel;
-        List<ParentTaskCallback> mDatas = new ArrayList<>();
+        LinkedBlockingQueue<ParentTaskCallback> mDatas = new LinkedBlockingQueue<>();
         poolManager = ThreadPoolManager.getInstance(key, mDatas, paramsModel);
         List<ParentTaskCallback> pauseAndErrorList = new ArrayList<>();
         wrapper = new DataHandleWrapper(key, mDatas, pauseAndErrorList);
