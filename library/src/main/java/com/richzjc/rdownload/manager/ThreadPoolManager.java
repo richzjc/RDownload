@@ -4,7 +4,6 @@ import com.richzjc.rdownload.data.model.ConfigurationParamsModel;
 import com.richzjc.rdownload.download.task.IDownload;
 import com.richzjc.rdownload.notification.callback.ParentTaskCallback;
 import java.util.HashMap;
-import java.util.List;
 import java.util.concurrent.LinkedBlockingQueue;
 
 public class ThreadPoolManager {
@@ -69,8 +68,7 @@ public class ThreadPoolManager {
         //TODO 2、更新对应实体的属性，主要有进度， 状态，通过注解就可以去完成了
         try {
             this.parentTaskCallback = mDatas.take();
-            List<IDownload> tasks = TaskUtils.getAllTasks(parentTaskCallback);
-            queue.addAll(tasks);
+            queue.addAll(parentTaskCallback.getDownloadTasks());
         } catch (InterruptedException e) {
             e.printStackTrace();
         }

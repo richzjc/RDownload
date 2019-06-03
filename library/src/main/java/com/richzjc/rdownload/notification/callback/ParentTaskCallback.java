@@ -4,8 +4,14 @@ import com.richzjc.rdownload.download.task.DownloadTask;
 
 import java.util.List;
 
-public interface ParentTaskCallback {
+public abstract class ParentTaskCallback {
 
-    List<DownloadTask> getDownloadUrls();
-    String getParentTaskId();
+    int progress = 0;
+    int status = 0;
+    int downloadLength = 0;
+    int totalLength = 0;
+
+    public abstract List<DownloadTask> getDownloadTasks();
+
+    public abstract String getParentTaskId();
 }
