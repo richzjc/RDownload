@@ -28,7 +28,8 @@ final class OkhttpDownload {
         okHttpClient = new OkHttpClient.Builder().build();
     }
 
-    public void download(String url) {
+    public void download(DownloadTask task) {
+        String url = task.getUrl();
         Request request = new Request.Builder().url(url)
                 .addHeader("RANGE", "0")
                 .build();
