@@ -23,8 +23,6 @@ public final class FileUtil {
     // ------------------------------ 手机系统相关 ------------------------------
     public static final String NEWLINE = System.getProperty("line.separator");// 系统的换行符
     public static final String APPROOT = "wallstreetcn";// 程序的根目录
-    public static final String ASSERT_PATH = "file:///android_asset";//apk的assert目录
-    public static final String RES_PATH = "file:///android_res";//apk的assert目录
 
     //----------------------------------存放文件的路径后缀------------------------------------
     public static final String CACHE_IMAGE_SUFFIX = File.separator + APPROOT + File.separator + "images" + File.separator;
@@ -37,41 +35,6 @@ public final class FileUtil {
     public static String SDCARD_PATH;// SD卡路径
     public static String LOCAL_PATH;// 本地路径,即/data/data/目录下的程序私有目录
     public static String CURRENT_PATH = "";// 当前的路径,如果有SD卡的时候当前路径为SD卡，如果没有的话则为程序的私有目录
-
-    static {
-        init();
-    }
-
-    public static void init() {
-        Log.e("fileUtil", "fileUtil + init");
-        File file =  getApplication().getExternalFilesDir(Environment.DIRECTORY_PODCASTS);
-        if(file != null)
-            SDCARD_PATH = file.getPath();
-        LOCAL_PATH = getApplication().getCacheDir().getPath();// 本地路径,即/data/data/目录下的程序私有目录
-
-        if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED) && !TextUtils.isEmpty(SDCARD_PATH)) {
-            CURRENT_PATH = SDCARD_PATH;
-        } else {
-            CURRENT_PATH = LOCAL_PATH;
-        }
-        Log.i("FileUtil", CURRENT_PATH);
-    }
-
-    public static String getCacheParentFile() {
-        return CURRENT_PATH + File.separator + APPROOT;
-    }
-
-    public static String getCacheFileSuffix() {
-        return CURRENT_PATH + CACHE_FILE_SUFFIX;
-    }
-
-    public static String getCacheImageSuffix() {
-        return CURRENT_PATH + CACHE_IMAGE_SUFFIX;
-    }
-
-    private static Context getApplication() {
-        return UtilsContextManager.getInstance().getApplication();
-    }
 
     /**
      * 得到与当前存储路径相反的路径(当前为/data/data目录，则返回/sdcard目录;当前为/sdcard，则返回/data/data目录)
@@ -154,158 +117,6 @@ public final class FileUtil {
             e.printStackTrace();
         }
 
-        return false;
-    }
-
-    public static Bitmap addPigWatermark(Context context, Bitmap bitmap) {
-        if (bitmap == null)
-            return bitmap;
-        Drawable drawable = context.getResources().getDrawable(R.drawable.app_water_mark);
-        BitmapDrawable bd = (BitmapDrawable) drawable;
-        if (bd == null) return bitmap;
-        final Bitmap mark = bd.getBitmap();
-        if (mark == null) return bitmap;
-        mark.setDensity(context.getResources().getDisplayMetrics().densityDpi);
-        int w = mark.getWidth();
-        int h = mark.getHeight();
-        int mBitmapWidth = bitmap.getWidth();
-        int mBitmapHeight = bitmap.getHeight();
-        Bitmap resize = null;
-        if (mBitmapWidth / w < 2) {
-            int newW = (int) (mBitmapWidth * 0.3);
-            int newH = (int) (h * newW / w);
-            w = newW;
-            h = newH;
-        }
-        if (mBitmapHeight / h < 2) {
-            int newH = (int) (mBitmapHeight * 0.3);
-            int newW = (int) (w * newH / h);
-            w = newW;
-            h = newH;
-        }
-        resize = Bitmap.createScaledBitmap(mark, w, h, false);
-        if (resize == null)
-            resize = mark;
-        Bitmap newBitmap = Bitmap.createBitmap(mBitmapWidth, mBitmapHeight, Bitmap.Config.ARGB_8888);
-        Canvas canvas = new Canvas(newBitmap);
-        canvas.drawBitmap(bitmap, 0, 0, null);
-        canvas.drawBitmap(resize, mBitmapWidth - resize.getWidth() - 10, mBitmapHeight - resize.getHeight() - 10, null);
-        return newBitmap;
-    }
-
-    public static void saveBitmapToCamera(Context context, Bitmap bitmap) {
-        if (bitmap == null) {
-            MToastHelper.showToast(ResourceUtils.getResStringFromId(R.string.helper_save_failure));
-            return;
-        }
-        String fileName = null;
-        String galleryPath = Environment.getExternalStorageDirectory()
-                + File.separator + Environment.DIRECTORY_DCIM + File.separator;
-        File file = null;
-        FileOutputStream outStream = null;
-
-        try {
-            file = new File(galleryPath, System.currentTimeMillis() + "");
-            fileName = file.toString();
-            outStream = new FileOutputStream(fileName);
-            if (null != outStream) {
-                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outStream);
-            }
-
-        } catch (Exception e) {
-            e.getStackTrace();
-        } finally {
-            try {
-                if (outStream != null) {
-                    outStream.close();
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-
-        MediaStore.Images.Media.insertImage(context.getContentResolver(), bitmap, fileName, null);
-        Intent intent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
-        Uri uri = Uri.fromFile(file);
-        intent.setData(uri);
-        context.sendBroadcast(intent);
-        MToastHelper.showToast("保存成功");
-    }
-
-
-    /**
-     * 读取文件，返回以byte数组形式的数据
-     *
-     * @param filePath 要读取的文件路径名
-     * @return
-     */
-    public static byte[] readFile(String filePath) throws Exception {
-        try {
-            if (isFileExist(filePath)) {
-                FileInputStream fi = new FileInputStream(filePath);
-                return readInputStream(fi);
-            }
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
-    /**
-     * 从一个数量流里读取数据,返回以byte数组形式的数据。
-     * </br></br>
-     * 需要注意的是，如果这个方法用在从本地文件读取数据时，一般不会遇到问题，但如果是用于网络操作，就经常会遇到一些麻烦(available()方法的问题)。所以如果是网络流不应该使用这个方法。
-     *
-     * @param in 要读取的输入流
-     * @return
-     * @throws IOException
-     */
-    public static byte[] readInputStream(InputStream in) {
-        try {
-            ByteArrayOutputStream os = new ByteArrayOutputStream();
-
-            byte[] b = new byte[in.available()];
-            int length = 0;
-            while ((length = in.read(b)) != -1) {
-                os.write(b, 0, length);
-            }
-
-            b = os.toByteArray();
-
-            in.close();
-            in = null;
-
-            os.close();
-            os = null;
-
-            return b;
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
-
-    /**
-     * 将一个文件拷贝到另外一个地方
-     *
-     * @param sourceFile    源文件地址
-     * @param destFile      目的地址
-     * @param shouldOverlay 是否覆盖
-     * @return
-     */
-    public static boolean copyFiles(String sourceFile, String destFile, boolean shouldOverlay) {
-        try {
-            if (shouldOverlay) {
-                deleteFile(destFile);
-            }
-            FileInputStream fi = new FileInputStream(sourceFile);
-            writeFile(destFile, fi);
-            return true;
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
         return false;
     }
 

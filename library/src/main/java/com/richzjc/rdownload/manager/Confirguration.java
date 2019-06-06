@@ -1,5 +1,6 @@
 package com.richzjc.rdownload.manager;
 
+import android.content.Context;
 import com.richzjc.rdownload.download.constant.NetworkType;
 import com.richzjc.rdownload.notification.callback.ParentTaskCallback;
 import com.richzjc.rdownload.data.model.ConfigurationParamsModel;
@@ -17,12 +18,12 @@ import java.util.concurrent.LinkedBlockingQueue;
  */
 public class Confirguration {
 
-   private ThreadPoolManager poolManager;
-   private DataHandleWrapper wrapper;
-   private ConfigurationParamsModel paramsModel;
-   public String key;
+    private ThreadPoolManager poolManager;
+    private DataHandleWrapper wrapper;
+    private ConfigurationParamsModel paramsModel;
+    public String key;
 
-    public Confirguration(String key, ConfigurationParamsModel paramsModel) {
+    private Confirguration(String key, ConfigurationParamsModel paramsModel) {
         this.key = key;
         this.paramsModel = paramsModel;
         LinkedBlockingQueue<ParentTaskCallback> mDatas = new LinkedBlockingQueue<>();
@@ -54,6 +55,43 @@ public class Confirguration {
     public void setNetWorkType(NetworkType netWorkType) {
         //TODO 根据这个networkType 如果不符合条件 则要暂停去下载
         paramsModel.networkType = netWorkType;
+    }
 
+    public static final class ConfirgurationBuilder {
+
+        private NetworkType networkType = NetworkType.WIFI;
+        private String configurationKey;
+        private ErrorMsgCallback msgCallback;
+
+        public ConfirgurationBuilder setNetWorkType(NetworkType workType) {
+            this.networkType = workType;
+            return this;
+        }
+
+        public ConfirgurationBuilder setConfigurationKey(String configurationKey) {
+            this.configurationKey = configurationKey;
+            return this;
+        }
+
+        public ConfirgurationBuilder setErrorMsgCallback(ErrorMsgCallback callback) {
+            this.msgCallback = callback;
+            return this;
+        }
+
+
+        public Confirguration build(Context context) {
+            if (context == null)
+                throw new IllegalStateException("context 不能为空");
+            ConfigurationParamsModel paramsModel = new ConfigurationParamsModel();
+            paramsModel.context = context.getApplicationContext();
+            paramsModel.networkType = networkType;
+            paramsModel.msgCallback = msgCallback;
+            return new Confirguration(configurationKey, paramsModel);
+        }
+    }
+
+    // 当有错误 信息的时候 回调到上层页面进行处理进行上报操作
+    public interface ErrorMsgCallback {
+        void downLoadError(String msgs);
     }
 }

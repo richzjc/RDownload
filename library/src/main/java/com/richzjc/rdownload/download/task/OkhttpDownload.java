@@ -45,7 +45,7 @@ final class OkhttpDownload {
 
     private void writeFiles(ResponseBody body, String url) {
         File file = new File(Environment.getExternalStorageDirectory(), String.valueOf(url.hashCode()));
-        if (!FileUtil.createFile(file.getAbsolutePath())) ;
+       // if (!FileUtil.createFile(file.getAbsolutePath())) ;
         try {
             RandomAccessFile accessFile = new RandomAccessFile(file, "rw");
             accessFile.seek(0);
