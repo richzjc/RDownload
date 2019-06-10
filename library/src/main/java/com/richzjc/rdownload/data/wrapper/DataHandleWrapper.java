@@ -1,6 +1,10 @@
 package com.richzjc.rdownload.data.wrapper;
 
+import com.richzjc.rdownload.download.constant.DownloadConstance;
 import com.richzjc.rdownload.notification.callback.ParentTaskCallback;
+import com.richzjc.rdownload.util.JavaFieldUtil;
+import com.richzjc.rdownload.util.UpdateDownloadStateUtil;
+
 import java.util.List;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -10,31 +14,34 @@ public class DataHandleWrapper {
     private List<ParentTaskCallback> pauseAndErrorList;
     private String key;
 
-    public DataHandleWrapper(String key, LinkedBlockingQueue<ParentTaskCallback> mDatas, List<ParentTaskCallback> pauseAndErrorList){
+    public DataHandleWrapper(String key, LinkedBlockingQueue<ParentTaskCallback> mDatas, List<ParentTaskCallback> pauseAndErrorList) {
         this.key = key;
         this.mDatas = mDatas;
         this.pauseAndErrorList = pauseAndErrorList;
     }
 
     public void addParentTask(ParentTaskCallback parentTask) {
+        JavaFieldUtil.saveFieldToMap(parentTask);
         mDatas.remove(parentTask);
         pauseAndErrorList.remove(parentTask);
         mDatas.add(parentTask);
         //TODO 入库，判断数据库里面是否存在
+
         //TODO 标记为等待缓存， 通过注解回调回去，
+        UpdateDownloadStateUtil.updateDownloadState(parentTask, new Object[]{0, DownloadConstance.WAITING}, JavaFieldUtil.getFieldsFromMap(parentTask));
         // TODO 并且更新实体类的状态，状态也根据注解，反射去更新
     }
 
     public void addParentTasks(List<ParentTaskCallback> parentTasks) {
-        if(parentTasks != null){
-            for(ParentTaskCallback taskCallback : parentTasks){
+        if (parentTasks != null) {
+            for (ParentTaskCallback taskCallback : parentTasks) {
                 addParentTask(taskCallback);
             }
         }
     }
 
     public void pauseParentTask(ParentTaskCallback parentTask) {
-        if(parentTask != null){
+        if (parentTask != null) {
             mDatas.remove(parentTask);
             pauseAndErrorList.remove(parentTask);
             pauseAndErrorList.add(parentTask);
@@ -45,8 +52,8 @@ public class DataHandleWrapper {
     }
 
     public void pauseParentTasks(List<ParentTaskCallback> parentTasks) {
-        if(parentTasks != null){
-            for(ParentTaskCallback taskCallback : parentTasks){
+        if (parentTasks != null) {
+            for (ParentTaskCallback taskCallback : parentTasks) {
                 pauseParentTask(taskCallback);
             }
         }

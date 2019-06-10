@@ -11,24 +11,22 @@ public class ThreadPoolManager {
     private static HashMap<String, ThreadPoolManager> map;
     private LinkedBlockingQueue<IDownload> queue;
     private ParentTaskCallback parentTaskCallback;
-    private LinkedBlockingQueue<ParentTaskCallback> mDatas;
-    private ConfigurationParamsModel paramsModel;
+    private String configurationKey;
 
-    public static ThreadPoolManager getInstance(String configurationKey, LinkedBlockingQueue<ParentTaskCallback> mDatas, ConfigurationParamsModel paramsModel) {
+    public static ThreadPoolManager getInstance(String configurationKey) {
         if (map == null)
             map = new HashMap<>();
         if (map.containsKey(configurationKey))
             return map.get(configurationKey);
         else {
-            ThreadPoolManager poolManager = new ThreadPoolManager(mDatas, paramsModel);
+            ThreadPoolManager poolManager = new ThreadPoolManager(configurationKey);
             map.put(configurationKey, poolManager);
             return poolManager;
         }
     }
 
-    private ThreadPoolManager(LinkedBlockingQueue<ParentTaskCallback> mDatas, ConfigurationParamsModel paramsModel) {
-        this.mDatas = mDatas;
-        this.paramsModel = paramsModel;
+    private ThreadPoolManager(String configurationKey) {
+        this.configurationKey = configurationKey;
         queue = new LinkedBlockingQueue<>();
         init();
 
@@ -45,7 +43,7 @@ public class ThreadPoolManager {
                     }
                     try {
                         IDownload runnable = queue.take();
-                        runnable.run();
+                        runnable.run(configurationKey);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
@@ -67,7 +65,8 @@ public class ThreadPoolManager {
         //TODO 1、刷新界面，通过注解去刷新界面
         //TODO 2、更新对应实体的属性，主要有进度， 状态，通过注解就可以去完成了
         try {
-            this.parentTaskCallback = mDatas.take();
+            Confirguration confirguration = RDownloadManager.getInstance().getConfiguration(configurationKey);
+            this.parentTaskCallback = confirguration.mDatas.take();
             queue.addAll(parentTaskCallback.getDownloadTasks());
         } catch (InterruptedException e) {
             e.printStackTrace();

@@ -5,7 +5,6 @@ import com.richzjc.rdownload.download.constant.NetworkType;
 import com.richzjc.rdownload.notification.callback.ParentTaskCallback;
 import com.richzjc.rdownload.data.model.ConfigurationParamsModel;
 import com.richzjc.rdownload.data.wrapper.DataHandleWrapper;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -20,14 +19,15 @@ public class Confirguration {
 
     private ThreadPoolManager poolManager;
     private DataHandleWrapper wrapper;
-    private ConfigurationParamsModel paramsModel;
+    public ConfigurationParamsModel paramsModel;
     public String key;
+    LinkedBlockingQueue<ParentTaskCallback> mDatas;
 
     private Confirguration(String key, ConfigurationParamsModel paramsModel) {
         this.key = key;
         this.paramsModel = paramsModel;
-        LinkedBlockingQueue<ParentTaskCallback> mDatas = new LinkedBlockingQueue<>();
-        poolManager = ThreadPoolManager.getInstance(key, mDatas, paramsModel);
+        mDatas = new LinkedBlockingQueue<>();
+        poolManager = ThreadPoolManager.getInstance(key);
         List<ParentTaskCallback> pauseAndErrorList = new ArrayList<>();
         wrapper = new DataHandleWrapper(key, mDatas, pauseAndErrorList);
     }

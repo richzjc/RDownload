@@ -1,17 +1,5 @@
 package com.richzjc.rdownload.util;
 
-import android.content.Context;
-import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.Canvas;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
-import android.net.Uri;
-import android.os.Environment;
-import android.provider.MediaStore;
-import android.text.TextUtils;
-import android.util.Log;
-import com.richzjc.rdownload.R;
 import java.io.*;
 
 

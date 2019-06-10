@@ -1,7 +1,9 @@
 package com.richzjc.rdownload.download.task;
 
-import android.os.Environment;
 import android.util.Log;
+import com.richzjc.rdownload.manager.Confirguration;
+import com.richzjc.rdownload.manager.RDownloadManager;
+import com.richzjc.rdownload.util.DownloadUtil;
 import com.richzjc.rdownload.util.FileUtil;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -28,24 +30,27 @@ final class OkhttpDownload {
         okHttpClient = new OkHttpClient.Builder().build();
     }
 
-    public void download(DownloadTask task) {
+    public void download(String configurationKey, DownloadTask task) {
         String url = task.getUrl();
         Request request = new Request.Builder().url(url)
                 .addHeader("RANGE", "0")
+                .addHeader("Connection", "close")
                 .build();
         try {
             Response response = okHttpClient.newCall(request).execute();
             ResponseBody body = response.body();
             Log.i("body", body.contentType().toString());
-            writeFiles(body, url);
+            writeFiles(configurationKey, body, task);
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    private void writeFiles(ResponseBody body, String url) {
-        File file = new File(Environment.getExternalStorageDirectory(), String.valueOf(url.hashCode()));
-       // if (!FileUtil.createFile(file.getAbsolutePath())) ;
+    private void writeFiles(String configurationKey, ResponseBody body, DownloadTask task) {
+        Confirguration confirguration = RDownloadManager.getInstance().getConfiguration(configurationKey);
+        File file = new File(DownloadUtil.getDownloadFilePath(confirguration.paramsModel.context, task));
+        if (!FileUtil.createFile(file.getAbsolutePath()))
+            return;
         try {
             RandomAccessFile accessFile = new RandomAccessFile(file, "rw");
             accessFile.seek(0);
