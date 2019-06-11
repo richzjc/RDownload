@@ -1,6 +1,6 @@
 package com.richzjc.rdownload.manager;
 
-import com.richzjc.rdownload.data.model.ConfigurationParamsModel;
+import android.util.Log;
 import com.richzjc.rdownload.download.task.IDownload;
 import com.richzjc.rdownload.notification.callback.ParentTaskCallback;
 import java.util.HashMap;
@@ -33,6 +33,7 @@ public class ThreadPoolManager {
     }
 
     private void init() {
+        Log.i("download", "init");
         new Thread() {
             @Override
             public void run() {

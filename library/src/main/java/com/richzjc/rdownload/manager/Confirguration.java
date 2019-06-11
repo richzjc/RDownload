@@ -1,10 +1,12 @@
 package com.richzjc.rdownload.manager;
 
 import android.content.Context;
+import android.util.Log;
 import com.richzjc.rdownload.download.constant.NetworkType;
 import com.richzjc.rdownload.notification.callback.ParentTaskCallback;
 import com.richzjc.rdownload.data.model.ConfigurationParamsModel;
 import com.richzjc.rdownload.data.wrapper.DataHandleWrapper;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -27,7 +29,7 @@ public class Confirguration {
         this.key = key;
         this.paramsModel = paramsModel;
         mDatas = new LinkedBlockingQueue<>();
-        poolManager = ThreadPoolManager.getInstance(key);
+        Log.i("download", "configuration constructor");
         List<ParentTaskCallback> pauseAndErrorList = new ArrayList<>();
         wrapper = new DataHandleWrapper(key, mDatas, pauseAndErrorList);
     }
@@ -55,6 +57,11 @@ public class Confirguration {
     public void setNetWorkType(NetworkType netWorkType) {
         //TODO 根据这个networkType 如果不符合条件 则要暂停去下载
         paramsModel.networkType = netWorkType;
+    }
+
+    public void start() {
+        if (poolManager == null)
+            poolManager = ThreadPoolManager.getInstance(key);
     }
 
     public static final class ConfirgurationBuilder {

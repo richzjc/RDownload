@@ -1,5 +1,6 @@
 package com.richzjc.rdownload
 
+import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
 import android.os.Environment
@@ -30,9 +31,15 @@ class MainActivity : AppCompatActivity() {
         window.navigationBarColor = Color.parseColor("#1482f0")
     }
 
-    private fun init(){
+    private fun init() {
         findViewById<Button>(R.id.btn).setOnClickListener {
-           RDownloadManager.getInstance().getConfiguration("test").addParentTask(ParentTaskModel());
+            val model = ParentTaskModel()
+            RDownloadManager.getInstance().getConfiguration("test").addParentTask(model);
+            val intent = Intent(this@MainActivity, DonwloadDetailActivity::class.java)
+            val extra = Bundle()
+            extra.putParcelable("model", model)
+            intent.putExtras(extra)
+            startActivity(intent)
         }
     }
 

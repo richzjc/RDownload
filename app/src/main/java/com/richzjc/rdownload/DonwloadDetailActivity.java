@@ -1,0 +1,14 @@
+package com.richzjc.rdownload;
+
+import android.os.Bundle;
+import android.support.annotation.Nullable;
+import android.support.v7.app.AppCompatActivity;
+
+public class DonwloadDetailActivity extends AppCompatActivity {
+
+    @Override
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.paid_recycler_item_downloading_article);
+    }
+}
