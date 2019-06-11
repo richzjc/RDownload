@@ -68,7 +68,6 @@ public class Confirguration {
 
         private NetworkType networkType = NetworkType.WIFI;
         private String configurationKey;
-        private ErrorMsgCallback msgCallback;
 
         public ConfirgurationBuilder setNetWorkType(NetworkType workType) {
             this.networkType = workType;
@@ -80,25 +79,13 @@ public class Confirguration {
             return this;
         }
 
-        public ConfirgurationBuilder setErrorMsgCallback(ErrorMsgCallback callback) {
-            this.msgCallback = callback;
-            return this;
-        }
-
-
         public Confirguration build(Context context) {
             if (context == null)
                 throw new IllegalStateException("context 不能为空");
             ConfigurationParamsModel paramsModel = new ConfigurationParamsModel();
             paramsModel.context = context.getApplicationContext();
             paramsModel.networkType = networkType;
-            paramsModel.msgCallback = msgCallback;
             return new Confirguration(configurationKey, paramsModel);
         }
-    }
-
-    // 当有错误 信息的时候 回调到上层页面进行处理进行上报操作
-    public interface ErrorMsgCallback {
-        void downLoadError(String msgs);
     }
 }

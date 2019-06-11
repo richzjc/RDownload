@@ -12,23 +12,19 @@ __该库包含了以下几个模块__
     notification 模块 （主要将一些下载的进度，状态信息回调回去的代码放在了当前的module）
     util 模块 （主要旋转的是一些工具方法）
 
-### rx包下面的eventbus详解
+### 接下来看一下具体是如何使用的
 
-    手撸eventBus类其目的主要是用于解藕，降低项目的偶合度。其里面添加了注册和注销的方法，
-    同时将调用注册方法的当前类，对于添加了ProgressSubscribe, SizeChangeSubscribe注解的方法，
-    保存起来，以供后面，当数据有更新时，可以通过反射去调用该方法。
-    
-### task包详解
+     val configration = Confirguration.ConfirgurationBuilder()
+                .setNetWorkType(NetworkType.WIFI)
+                .setConfigurationKey("test")
+                .build(applicationContext)
+     RDownloadManager.getInstance().setConfiguration(configration)
+     
+     RDownloadManager 作为整个下载的管理类， 在下载之前必须要初始化Configuration,
+     由于我项目里面文章的下载和音视频下载是不能放在一起下载的，所以每一个configuration必须有一个对应的configurationKey,
+     并且要保证唯一。
+     
+---
 
-    task包下面的类是纯种池里面执行的任务单元。
-    AudioVideoTask: 音视频下载的任务单元
-    ImageTask: 图片下载的任务单元
- 
-### wraper包的详解
 
-    wraper主要是一个包装库。对下载队列的增删改查，都在DataHandleWrapper类里面具体实现。
-    
-### builder包详解
-
-    builder包，主要是运用构造者模式对configuration进行配置初始化
     
