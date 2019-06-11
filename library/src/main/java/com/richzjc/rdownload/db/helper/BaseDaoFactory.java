@@ -28,7 +28,7 @@ public class BaseDaoFactory {
     }
 
     private BaseDaoFactory(Context context){
-        path = "/data/data/" + context.getPackageName() + "/database/ne.db";
+        path = "/data/data/" + context.getPackageName() + "/database/download.db";
         // 判断路径是否存在
         File file = new File(path);
         if(!file.getParentFile().exists()){

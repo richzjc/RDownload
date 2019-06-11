@@ -1,6 +1,9 @@
 package com.richzjc.rdownload.data.wrapper;
 
+import android.content.Context;
+import com.richzjc.rdownload.db.helper.BaseDaoFactory;
 import com.richzjc.rdownload.download.constant.DownloadConstance;
+import com.richzjc.rdownload.manager.RDownloadManager;
 import com.richzjc.rdownload.notification.callback.ParentTaskCallback;
 import com.richzjc.rdownload.util.JavaFieldUtil;
 import com.richzjc.rdownload.util.UpdateDownloadStateUtil;
@@ -21,15 +24,22 @@ public class DataHandleWrapper {
     }
 
     public void addParentTask(ParentTaskCallback parentTask) {
-        JavaFieldUtil.saveFieldToMap(parentTask);
-        mDatas.remove(parentTask);
-        pauseAndErrorList.remove(parentTask);
-        mDatas.add(parentTask);
-        //TODO 入库，判断数据库里面是否存在
+        try {
+            Context context = RDownloadManager.getInstance().getConfiguration(key).paramsModel.context;
+            Class cls = Class.forName(parentTask.getClass().getName());
+            BaseDaoFactory.getInstance(context).getBaseDao(cls).insert(parentTask);
+            JavaFieldUtil.saveFieldToMap(parentTask);
+            mDatas.remove(parentTask);
+            pauseAndErrorList.remove(parentTask);
+            mDatas.add(parentTask);
+            //TODO 入库，判断数据库里面是否存在
 
-        //TODO 标记为等待缓存， 通过注解回调回去，
-        UpdateDownloadStateUtil.updateDownloadState(parentTask, new Object[]{0, DownloadConstance.WAITING}, JavaFieldUtil.getFieldsFromMap(parentTask));
-        // TODO 并且更新实体类的状态，状态也根据注解，反射去更新
+            //TODO 标记为等待缓存， 通过注解回调回去，
+            UpdateDownloadStateUtil.updateDownloadState(parentTask, new Object[]{0, DownloadConstance.WAITING}, JavaFieldUtil.getFieldsFromMap(parentTask));
+            // TODO 并且更新实体类的状态，状态也根据注解，反射去更新
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
     }
 
     public void addParentTasks(List<ParentTaskCallback> parentTasks) {
