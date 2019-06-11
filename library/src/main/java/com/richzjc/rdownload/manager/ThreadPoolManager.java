@@ -33,6 +33,7 @@ public class ThreadPoolManager {
     }
 
     private void init() {
+        //TODO 一进来 就初始化一个线程感觉不怎么妥 应该是压根的时候在去new一个线程，多少时候没用了 线程就销毁掉
         Log.i("download", "init");
         new Thread() {
             @Override
@@ -72,5 +73,13 @@ public class ThreadPoolManager {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+    }
+
+    public void start() {
+        //TODO 开始下载
+    }
+
+    public void pause() {
+        //TODO 暂停下载
     }
 }

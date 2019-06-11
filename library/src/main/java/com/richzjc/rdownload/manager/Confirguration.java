@@ -6,6 +6,7 @@ import com.richzjc.rdownload.download.constant.NetworkType;
 import com.richzjc.rdownload.notification.callback.ParentTaskCallback;
 import com.richzjc.rdownload.data.model.ConfigurationParamsModel;
 import com.richzjc.rdownload.data.wrapper.DataHandleWrapper;
+import com.richzjc.rdownload.util.TDevice;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -55,8 +56,13 @@ public class Confirguration {
     }
 
     public void setNetWorkType(NetworkType netWorkType) {
-        //TODO 根据这个networkType 如果不符合条件 则要暂停去下载
         paramsModel.networkType = netWorkType;
+        if(netWorkType == NetworkType.WIFI){
+            if(TDevice.isConnectWIFI(paramsModel.context))
+                poolManager.start();
+            else
+                poolManager.pause();
+        }
     }
 
     public void start() {
