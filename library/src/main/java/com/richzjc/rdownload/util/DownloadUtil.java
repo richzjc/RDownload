@@ -15,10 +15,7 @@ public class DownloadUtil {
     public static String getDownloadFilePath(Context context, DownloadTask task){
         File file =  context.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS);
         if(file == null)
-            return "";
-        else{
             file = getExternalCacheDir(context);
-        }
         String path = TextUtils.concat(file.getAbsolutePath(), "/", String.valueOf(task.getUrl().hashCode()), getSuffix(task.getUrl())).toString();
         return path;
     }
