@@ -141,6 +141,8 @@ public class BaseDao<T extends ParentTaskCallback> implements IBaseDao<T> {
     // 获取对象的属性值，并且按照contentValue的方式存储起来
     private Map<String, String> getValue(String configurationKey, T bean) {
         Map<String, String> map = new HashMap<>();
+        map.put("configurationKey", configurationKey);
+        map.put("parentTaskId", bean.getParentTaskId());
         // 从缓存map中获取成员变量
         Iterator<Field> iterator = cacheMap.values().iterator();
         while (iterator.hasNext()) {
@@ -163,19 +165,6 @@ public class BaseDao<T extends ParentTaskCallback> implements IBaseDao<T> {
                 e.printStackTrace();
             }
         }
-        map.put("configurationKey", configurationKey);
-        map.put("parentTaskId", bean.getParentTaskId());
         return map;
     }
-
-    @Override
-    public ResultSet select(int id) {
-        return null;
-    }
-
-    @Override
-    public ResultSet selectAll() {
-        return null;
-    }
-
 }

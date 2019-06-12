@@ -3,6 +3,7 @@ package com.richzjc.rdownload.download.task;
 import android.util.Log;
 import com.richzjc.rdownload.manager.Confirguration;
 import com.richzjc.rdownload.manager.RDownloadManager;
+import com.richzjc.rdownload.notification.callback.ParentTaskCallback;
 import com.richzjc.rdownload.util.DownloadUtil;
 import com.richzjc.rdownload.util.FileUtil;
 import okhttp3.OkHttpClient;
@@ -10,6 +11,7 @@ import okhttp3.Request;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
 import java.io.*;
+import java.util.List;
 
 final class OkhttpDownload {
 
@@ -68,6 +70,30 @@ final class OkhttpDownload {
             } while (true);
             accessFile.close();
             bufferedInputStream.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    public void getTaskTotalLength(ParentTaskCallback ptc){
+       List<DownloadTask> list = ptc.getDownloadTasks();
+       for(DownloadTask task : list){
+           getLengthByUrl(task);
+       }
+    }
+
+    private void getLengthByUrl(DownloadTask task) {
+        String url = task.getUrl();
+        Request request = new Request.Builder().url(url)
+                .addHeader("RANGE", "0")
+                .addHeader("Connection", "close")
+                .head()
+                .build();
+        try {
+            Response response = okHttpClient.newCall(request).execute();
+            String length = response.header("content-length", "0");
+            Log.i("download", "total_length = " + length);
         } catch (IOException e) {
             e.printStackTrace();
         }

@@ -2,6 +2,7 @@ package com.richzjc.rdownload.manager;
 
 import android.util.Log;
 import com.richzjc.rdownload.download.task.IDownload;
+import com.richzjc.rdownload.download.task.TotalLengthTask;
 import com.richzjc.rdownload.notification.callback.ParentTaskCallback;
 import java.util.HashMap;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -69,6 +70,7 @@ public class ThreadPoolManager {
         try {
             Confirguration confirguration = RDownloadManager.getInstance().getConfiguration(configurationKey);
             this.parentTaskCallback = confirguration.mDatas.take();
+            new TotalLengthTask(parentTaskCallback).run(configurationKey);
             queue.addAll(parentTaskCallback.getDownloadTasks());
         } catch (InterruptedException e) {
             e.printStackTrace();

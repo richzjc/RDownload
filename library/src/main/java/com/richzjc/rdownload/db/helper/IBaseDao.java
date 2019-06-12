@@ -9,8 +9,4 @@ public interface IBaseDao<T> {
     // 插入数据
     long insert(String configurationKey, T bean);
 
-    ResultSet select(int id);
-
-    ResultSet selectAll();
-
 }
