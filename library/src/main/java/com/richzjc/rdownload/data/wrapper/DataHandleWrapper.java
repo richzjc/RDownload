@@ -2,7 +2,7 @@ package com.richzjc.rdownload.data.wrapper;
 
 import android.content.Context;
 import com.richzjc.rdownload.db.helper.BaseDaoFactory;
-import com.richzjc.rdownload.download.constant.DownloadConstance;
+import com.richzjc.rdownload.download.constant.DownloadConstants;
 import com.richzjc.rdownload.manager.RDownloadManager;
 import com.richzjc.rdownload.manager.ThreadPoolManager;
 import com.richzjc.rdownload.notification.callback.ParentTaskCallback;
@@ -31,7 +31,7 @@ public class DataHandleWrapper {
         mDatas.remove(parentTask);
         pauseAndErrorList.remove(parentTask);
         mDatas.add(parentTask);
-        DownloadUtil.updateDownloadState(parentTask, parentTask.progress, DownloadConstance.WAITING);
+        DownloadUtil.updateDownloadState(parentTask, parentTask.progress, DownloadConstants.WAITING);
         EventBus.getInstance().postProgress(key, parentTask);
         ParentTaskCallback callback = ThreadPoolManager.getInstance(key).pause();
         int size = pauseAndErrorList.size() + mDatas.size();
@@ -53,7 +53,7 @@ public class DataHandleWrapper {
             mDatas.remove(parentTask);
             pauseAndErrorList.remove(parentTask);
             pauseAndErrorList.add(parentTask);
-            DownloadUtil.updateDownloadState(parentTask, parentTask.progress, DownloadConstance.DOWNLOAD_PAUSE);
+            DownloadUtil.updateDownloadState(parentTask, parentTask.progress, DownloadConstants.DOWNLOAD_PAUSE);
             EventBus.getInstance().postProgress(key, parentTask);
         }
     }

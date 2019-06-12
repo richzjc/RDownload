@@ -52,6 +52,7 @@ public class EventBus {
                     Set<Object> cacheKeys = values.keySet();
                     for (Object key : cacheKeys) {
                         Method method = values.get(key);
+                        method.setAccessible(true);
                         method.invoke(key, dataModel.object);
                     }
                 } catch (Exception e) {

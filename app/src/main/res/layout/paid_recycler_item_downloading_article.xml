@@ -29,7 +29,6 @@
                 android:gravity="center"
                 android:textColor="#ffffff"
                 android:textSize="12sp"
-                android:text="等待缓存"
         />
     </RelativeLayout>
 
