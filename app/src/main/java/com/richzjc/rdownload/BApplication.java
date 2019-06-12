@@ -11,4 +11,5 @@ public class BApplication extends Application {
         super.onCreate();
         MultiDex.install(this);
     }
+
 }

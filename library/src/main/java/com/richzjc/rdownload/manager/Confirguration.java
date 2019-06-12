@@ -33,6 +33,7 @@ public class Confirguration {
         Log.i("download", "configuration constructor");
         List<ParentTaskCallback> pauseAndErrorList = new ArrayList<>();
         wrapper = new DataHandleWrapper(key, mDatas, pauseAndErrorList);
+        poolManager = ThreadPoolManager.getInstance(key);
     }
 
     public void addParentTask(ParentTaskCallback parentTask) {
@@ -73,11 +74,6 @@ public class Confirguration {
             else
                 poolManager.pause();
         }
-    }
-
-    public void start() {
-        if (poolManager == null)
-            poolManager = ThreadPoolManager.getInstance(key);
     }
 
     public static final class ConfirgurationBuilder {

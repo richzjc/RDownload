@@ -40,6 +40,5 @@ public class RDownloadManager {
         }else{
             map.put(confirguration.key, confirguration);
         }
-        confirguration.start();
     }
 }
