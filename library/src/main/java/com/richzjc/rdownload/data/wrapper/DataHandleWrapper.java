@@ -27,7 +27,7 @@ public class DataHandleWrapper {
         try {
             Context context = RDownloadManager.getInstance().getConfiguration(key).paramsModel.context;
             Class cls = Class.forName(parentTask.getClass().getName());
-            BaseDaoFactory.getInstance(context).getBaseDao(cls).insert(parentTask);
+            BaseDaoFactory.getInstance(context).getBaseDao(cls).insert(key, parentTask);
             JavaFieldUtil.saveFieldToMap(parentTask);
             mDatas.remove(parentTask);
             pauseAndErrorList.remove(parentTask);
@@ -57,6 +57,7 @@ public class DataHandleWrapper {
             pauseAndErrorList.add(parentTask);
             //TODO 标记为暂停状态， 并且通过注解回调回去更新界面的展示，
             // TODO 通过注解更新实体类的属性，
+            UpdateDownloadStateUtil.updateDownloadState(parentTask, new Object[]{0, DownloadConstance.DOWNLOAD_PAUSE}, JavaFieldUtil.getFieldsFromMap(parentTask));
             //  TODO 从线程池里面暂停当前使用的这个类
         }
     }

@@ -7,12 +7,13 @@ import android.text.TextUtils;
 import android.util.Log;
 import com.richzjc.rdownload.db.anotations.DbField;
 import com.richzjc.rdownload.db.anotations.DbTable;
+import com.richzjc.rdownload.notification.callback.ParentTaskCallback;
 
 import java.lang.reflect.Field;
 import java.sql.ResultSet;
 import java.util.*;
 
-public class BaseDao<T> implements IBaseDao<T> {
+public class BaseDao<T extends ParentTaskCallback> implements IBaseDao<T> {
 
     // 持有数据库引用
     private SQLiteDatabase sqLiteDatabase;
@@ -66,6 +67,8 @@ public class BaseDao<T> implements IBaseDao<T> {
         StringBuffer stringBuffer = new StringBuffer();
         stringBuffer.append("create table if not exists ");
         stringBuffer.append(tableName + "(");
+        stringBuffer.append("configurationKey" + " TEXT ,");
+        stringBuffer.append("parentTaskId" + " TEXT ,");
         //获取beanClazz对象的所有成员变量
         Field[] declaredFields = beanClazz.getDeclaredFields();
         DbField dbField;
@@ -96,8 +99,8 @@ public class BaseDao<T> implements IBaseDao<T> {
     }
 
     @Override
-    public long insert(T bean) {
-        Map<String, String> map = getValue(bean);
+    public long insert(String configurationKey, T bean) {
+        Map<String, String> map = getValue(configurationKey, bean);
         // 将map转换成contentvalues
         ContentValues contentValues = getContentValues(map);
         long result = sqLiteDatabase.insert(tableName, null, contentValues);
@@ -136,7 +139,7 @@ public class BaseDao<T> implements IBaseDao<T> {
     }
 
     // 获取对象的属性值，并且按照contentValue的方式存储起来
-    private Map<String, String> getValue(T bean) {
+    private Map<String, String> getValue(String configurationKey, T bean) {
         Map<String, String> map = new HashMap<>();
         // 从缓存map中获取成员变量
         Iterator<Field> iterator = cacheMap.values().iterator();
@@ -160,6 +163,8 @@ public class BaseDao<T> implements IBaseDao<T> {
                 e.printStackTrace();
             }
         }
+        map.put("configurationKey", configurationKey);
+        map.put("parentTaskId", bean.getParentTaskId());
         return map;
     }
 

@@ -7,7 +7,7 @@ import java.sql.ResultSet;
 public interface IBaseDao<T> {
 
     // 插入数据
-    long insert(T bean);
+    long insert(String configurationKey, T bean);
 
     ResultSet select(int id);
 
