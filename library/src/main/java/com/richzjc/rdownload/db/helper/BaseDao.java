@@ -99,24 +99,28 @@ public class BaseDao<T extends ParentTaskCallback> implements IBaseDao<T> {
     }
 
     @Override
-    public long insert(String configurationKey, T bean) {
-        Map<String, String> map = getValue(configurationKey, bean);
-        // 将map转换成contentvalues
-        ContentValues contentValues = getContentValues(map);
-        long result = sqLiteDatabase.insert(tableName, null, contentValues);
-        // 获取对象中的值
-        Log.e("====>", "成功插入" + result + "条数据");
-        return result;
+    public void insert(String configurationKey, T bean) {
+        Cursor cursor = sqLiteDatabase.query(tableName, null, "configurationKey = ? and parentTaskId = ?", new String[]{configurationKey, bean.getParentTaskId()}, null, null, null);
+        if(cursor.getCount() <= 0) {
+            Map<String, String> map = getValue(configurationKey, bean);
+            // 将map转换成contentvalues
+            ContentValues contentValues = getContentValues(map);
+            long result = sqLiteDatabase.insert(tableName, null, contentValues);
+            // 获取对象中的值
+            Log.e("====>", "成功插入" + result + "条数据");
+        }
+        query(bean);
     }
 
     public <T> List<T> query(T query) {
         //TODO 这个地方 还可以继续优化一下
         List<T> list = new ArrayList<>();
         Cursor cursor = sqLiteDatabase.query(tableName, null, null, null, null, null, null);
+        Log.i("download", cursor.getCount() + "");
         if (cursor.moveToFirst()) {
             do {
-                String name = cursor.getString(cursor. getColumnIndex("progress"));
-                Log.d("download", tableName + ": " + name);
+                String name = cursor.getString(cursor.getColumnIndex("progress"));
+                Log.i("download", tableName + ": " + name);
             }
             while (cursor.moveToNext());
         }
