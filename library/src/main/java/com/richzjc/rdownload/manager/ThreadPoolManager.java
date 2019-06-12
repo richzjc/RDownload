@@ -13,6 +13,7 @@ public class ThreadPoolManager {
     private LinkedBlockingQueue<IDownload> queue;
     private ParentTaskCallback parentTaskCallback;
     private String configurationKey;
+    private workThread workThread;
 
     public static ThreadPoolManager getInstance(String configurationKey) {
         if (map == null)
@@ -29,30 +30,6 @@ public class ThreadPoolManager {
     private ThreadPoolManager(String configurationKey) {
         this.configurationKey = configurationKey;
         queue = new LinkedBlockingQueue<>();
-        init();
-
-    }
-
-    private void init() {
-        //TODO 一进来 就初始化一个线程感觉不怎么妥 应该是压根的时候在去new一个线程，多少时候没用了 线程就销毁掉
-        Log.i("download", "init");
-        new Thread() {
-            @Override
-            public void run() {
-                while (true) {
-                    if (queue.isEmpty()) {
-                        saveCurrentDownloadStatus();
-                        addNextTask();
-                    }
-                    try {
-                        IDownload runnable = queue.take();
-                        runnable.run(configurationKey);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-        }.start();
     }
 
     private void saveCurrentDownloadStatus() {
@@ -78,10 +55,31 @@ public class ThreadPoolManager {
     }
 
     public void start() {
-        //TODO 开始下载
+        if(workThread == null){
+            workThread = new workThread();
+            workThread.start();
+        }
     }
 
     public void pause() {
-        //TODO 暂停下载
+        //
+    }
+
+    class workThread extends Thread{
+        @Override
+        public void run() {
+            while (true) {
+                if (queue.isEmpty()) {
+                    saveCurrentDownloadStatus();
+                    addNextTask();
+                }
+                try {
+                    IDownload runnable = queue.take();
+                    runnable.run(configurationKey);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
     }
 }

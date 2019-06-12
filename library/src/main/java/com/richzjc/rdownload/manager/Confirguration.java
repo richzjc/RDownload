@@ -37,14 +37,24 @@ public class Confirguration {
 
     public void addParentTask(ParentTaskCallback parentTask) {
         wrapper.addParentTask(parentTask);
+        poolManager.start();
     }
 
     public void addParentTasks(List<ParentTaskCallback> parentTasks) {
         wrapper.addParentTasks(parentTasks);
+        poolManager.start();
     }
 
     public void pauseParentTask(ParentTaskCallback parentTask) {
         wrapper.pauseParentTask(parentTask);
+    }
+
+    public void pauseAll(){
+
+    }
+
+    public void startAll(){
+
     }
 
     public void pauseParentTasks(List<ParentTaskCallback> parentTasks) {
