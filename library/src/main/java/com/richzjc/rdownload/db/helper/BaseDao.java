@@ -8,9 +8,7 @@ import android.util.Log;
 import com.richzjc.rdownload.db.anotations.DbField;
 import com.richzjc.rdownload.db.anotations.DbTable;
 import com.richzjc.rdownload.notification.callback.ParentTaskCallback;
-
 import java.lang.reflect.Field;
-import java.sql.ResultSet;
 import java.util.*;
 
 public class BaseDao<T extends ParentTaskCallback> implements IBaseDao<T> {
@@ -69,6 +67,8 @@ public class BaseDao<T extends ParentTaskCallback> implements IBaseDao<T> {
         stringBuffer.append(tableName + "(");
         stringBuffer.append("configurationKey" + " TEXT ,");
         stringBuffer.append("parentTaskId" + " TEXT ,");
+        stringBuffer.append("progress" + " INTEGER ,");
+        stringBuffer.append("status" + " INTEGER ,");
         //获取beanClazz对象的所有成员变量
         Field[] declaredFields = beanClazz.getDeclaredFields();
         DbField dbField;
@@ -143,6 +143,8 @@ public class BaseDao<T extends ParentTaskCallback> implements IBaseDao<T> {
         Map<String, String> map = new HashMap<>();
         map.put("configurationKey", configurationKey);
         map.put("parentTaskId", bean.getParentTaskId());
+        map.put("progress", String.valueOf(bean.progress));
+        map.put("status", String.valueOf(bean.status));
         // 从缓存map中获取成员变量
         Iterator<Field> iterator = cacheMap.values().iterator();
         while (iterator.hasNext()) {

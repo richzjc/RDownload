@@ -46,12 +46,13 @@ public class Confirguration {
     }
 
     public void pauseParentTask(ParentTaskCallback parentTask) {
-        poolManager.pause(parentTask);
         wrapper.pauseParentTask(parentTask);
     }
 
     public void pauseAll(){
-        poolManager.pause();
+        ParentTaskCallback callback = poolManager.pause();
+        if(callback != null)
+            pauseParentTask(callback);
         pauseParentTasks(mDatas);
     }
 

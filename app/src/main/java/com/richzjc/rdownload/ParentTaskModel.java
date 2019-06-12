@@ -2,23 +2,14 @@ package com.richzjc.rdownload;
 
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.text.TextUtils;
-import com.richzjc.rdownload.db.anotations.DbField;
 import com.richzjc.rdownload.db.anotations.DbTable;
 import com.richzjc.rdownload.download.task.DownloadTask;
 import com.richzjc.rdownload.notification.callback.ParentTaskCallback;
-
 import java.util.ArrayList;
 import java.util.List;
 
 @DbTable(value = "test_download_model")
 public class ParentTaskModel extends ParentTaskCallback implements Parcelable {
-
-    @DbField(value = "progress")
-    public int progress;
-
-    @DbField(value = "state")
-    public int state;
 
     @Override
     public List<DownloadTask> getDownloadTasks() {
@@ -38,7 +29,7 @@ public class ParentTaskModel extends ParentTaskCallback implements Parcelable {
 
     @Override
     public String toString() {
-        return "progress = " + progress + "; state = " + state;
+        return "progress = " + progress + "; state = " + status;
     }
 
     @Override
@@ -49,7 +40,7 @@ public class ParentTaskModel extends ParentTaskCallback implements Parcelable {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeInt(this.progress);
-        dest.writeInt(this.state);
+        dest.writeInt(this.status);
     }
 
     public ParentTaskModel() {
@@ -57,7 +48,7 @@ public class ParentTaskModel extends ParentTaskCallback implements Parcelable {
 
     protected ParentTaskModel(Parcel in) {
         this.progress = in.readInt();
-        this.state = in.readInt();
+        this.status = in.readInt();
     }
 
     public static final Parcelable.Creator<ParentTaskModel> CREATOR = new Parcelable.Creator<ParentTaskModel>() {

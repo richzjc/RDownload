@@ -1,5 +1,6 @@
 package com.richzjc.rdownload.manager;
 
+import android.text.TextUtils;
 import android.util.Log;
 import com.richzjc.rdownload.download.task.IDownload;
 import com.richzjc.rdownload.download.task.TotalLengthTask;
@@ -61,12 +62,8 @@ public class ThreadPoolManager {
         }
     }
 
-    public void pause() {
-        //TODO 直接暂停
-    }
-
-    public void pause(ParentTaskCallback taskCallback){
-        //TODO 暂停指定的任务
+    public ParentTaskCallback pause() {
+        return parentTaskCallback;
     }
 
     class workThread extends Thread{
