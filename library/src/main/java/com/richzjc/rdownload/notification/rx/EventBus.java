@@ -5,9 +5,10 @@ import android.os.Looper;
 import android.os.Message;
 import android.text.TextUtils;
 import android.util.Log;
+import com.richzjc.rdownload.data.model.RefreshDataModel;
 import com.richzjc.rdownload.notification.anotation.ProgressSubscribe;
 import com.richzjc.rdownload.notification.anotation.SizeChangeSubscribe;
-import com.richzjc.rdownload.data.model.RefreshDataModel;
+import com.richzjc.rdownload.notification.callback.ParentTaskCallback;
 
 import java.lang.reflect.Method;
 import java.util.HashMap;
@@ -88,7 +89,7 @@ public class EventBus {
                     continue;
                 else {
                     Class<?>[] types = method.getParameterTypes();
-                    if (types != null && types.length == 1 && TextUtils.equals("ProgressStatusModel", types[0].getSimpleName())) {
+                    if (types != null && types.length == 1 && types[0].isAssignableFrom(ParentTaskCallback.class)) {
                         String key = ProgressSubscribe.class.getSimpleName() + "&" + ps.configurationKey();
                         if (cacheMap.containsKey(key)) {
                             HashMap<Object, Method> map = cacheMap.get(key);
@@ -115,47 +116,8 @@ public class EventBus {
      * @param obj
      */
     private void registerSizeChangeSubscribe(Object obj) {
-        if (cacheMap.containsKey(SizeChangeSubscribe.class.getSimpleName())) {
-            HashMap<Object, Method> map = cacheMap.get(SizeChangeSubscribe.class.getSimpleName());
-            if (!map.containsKey(obj)) {
-                Method method = findSizeChangeList(obj);
-                if (method != null)
-                    map.put(obj, method);
-            }
-        } else {
-            HashMap<Object, Method> map = new HashMap<>();
-            Method method = findSizeChangeList(obj);
-            if (method != null)
-                map.put(obj, method);
-            cacheMap.put(SizeChangeSubscribe.class.getSimpleName(), map);
-        }
-    }
-
-    private Method findProgressSubscribeList(Object obj) {
         Class<?> cls = obj.getClass();
         Method[] mths = cls.getDeclaredMethods();
-        Method result = null;
-        if (mths != null) {
-            for (Method method : mths) {
-                ProgressSubscribe ps = method.getAnnotation(ProgressSubscribe.class);
-                if (ps == null)
-                    continue;
-                else {
-                    Class<?>[] types = method.getParameterTypes();
-                    if (types != null && types.length == 1 && TextUtils.equals("ProgressStatusModel", types[0].getSimpleName())) {
-                        result = method;
-                        break;
-                    }
-                }
-            }
-        }
-        return result;
-    }
-
-    private Method findSizeChangeList(Object obj) {
-        Class<?> cls = obj.getClass();
-        Method[] mths = cls.getDeclaredMethods();
-        Method result = null;
         if (mths != null) {
             for (Method method : mths) {
                 SizeChangeSubscribe ps = method.getAnnotation(SizeChangeSubscribe.class);
@@ -163,23 +125,45 @@ public class EventBus {
                     continue;
                 else {
                     Class<?>[] types = method.getParameterTypes();
-                    if (types != null && types.length == 1) {
-                        result = method;
+                    if (types != null
+                            && types.length == 1
+                            && (TextUtils.equals(types[0].getName(), Integer.class.getName()) || TextUtils.equals(types[0].getName(), "int"))) {
+                        String key = SizeChangeSubscribe.class.getSimpleName() + "&" + ps.configurationKey();
+                        if (cacheMap.containsKey(key)) {
+                            HashMap<Object, Method> map = cacheMap.get(key);
+                            if (!map.containsKey(obj) && method != null) {
+                                map.put(obj, method);
+                            }
+                        } else {
+                            HashMap<Object, Method> map = new HashMap<>();
+                            if (!map.containsKey(obj) && method != null) {
+                                map.put(obj, method);
+                            }
+                            cacheMap.put(key, map);
+                        }
                         break;
                     }
                 }
             }
         }
-        return result;
     }
 
     /**
      * 调用通知刷新的方法
      *
-     * @param refreshDataModel
      */
-    public void post(RefreshDataModel refreshDataModel) {
-        handler.obtainMessage(1000, refreshDataModel).sendToTarget();
+    public void postProgress(String configurationKey, ParentTaskCallback taskCallback) {
+        RefreshDataModel dataModel = new RefreshDataModel();
+        dataModel.subscribeName = ProgressSubscribe.class.getSimpleName() + "&" + configurationKey;
+        dataModel.object = taskCallback;
+        handler.obtainMessage(1000, dataModel).sendToTarget();
+    }
+
+    public void postSizeChange(String configurationKey, int size) {
+        RefreshDataModel dataModel = new RefreshDataModel();
+        dataModel.subscribeName = SizeChangeSubscribe.class.getSimpleName() + "&" + configurationKey;
+        dataModel.object = size;
+        handler.obtainMessage(1001, dataModel).sendToTarget();
     }
 
     public void unRegister(Object obj) {

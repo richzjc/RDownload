@@ -4,10 +4,11 @@ import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.*;
 import android.util.AttributeSet;
+import androidx.appcompat.widget.AppCompatImageView;
 import com.richzjc.rdownload.R;
 import static android.graphics.Canvas.ALL_SAVE_FLAG;
 
-public class ProgressWscnImageView extends android.support.v7.widget.AppCompatImageView {
+public class ProgressWscnImageView extends AppCompatImageView {
 
     private float mProgress;
     private int mHeight;

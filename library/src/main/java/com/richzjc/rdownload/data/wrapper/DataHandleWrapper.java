@@ -4,7 +4,9 @@ import android.content.Context;
 import com.richzjc.rdownload.db.helper.BaseDaoFactory;
 import com.richzjc.rdownload.download.constant.DownloadConstance;
 import com.richzjc.rdownload.manager.RDownloadManager;
+import com.richzjc.rdownload.manager.ThreadPoolManager;
 import com.richzjc.rdownload.notification.callback.ParentTaskCallback;
+import com.richzjc.rdownload.notification.rx.EventBus;
 import com.richzjc.rdownload.util.DownloadUtil;
 import java.util.Collection;
 import java.util.List;
@@ -23,22 +25,19 @@ public class DataHandleWrapper {
     }
 
     public void addParentTask(ParentTaskCallback parentTask) {
-        try {
-            Context context = RDownloadManager.getInstance().getConfiguration(key).paramsModel.context;
-            Class cls = Class.forName(parentTask.getClass().getName());
-            BaseDaoFactory.getInstance(context).getBaseDao(cls).insert(key, parentTask);
+        Context context = RDownloadManager.getInstance().getConfiguration(key).paramsModel.context;
+        BaseDaoFactory.getInstance(context).getBaseDao(parentTask.getClass().getName()).insert(key, parentTask);
 
-            mDatas.remove(parentTask);
-            pauseAndErrorList.remove(parentTask);
-            mDatas.add(parentTask);
-            //TODO 入库，判断数据库里面是否存在
-
-            //TODO 标记为等待缓存， 通过注解回调回去，
-            DownloadUtil.updateDownloadState(parentTask, parentTask.progress, DownloadConstance.WAITING);
-            // TODO 并且更新实体类的状态，状态也根据注解，反射去更新
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        }
+        mDatas.remove(parentTask);
+        pauseAndErrorList.remove(parentTask);
+        mDatas.add(parentTask);
+        DownloadUtil.updateDownloadState(parentTask, parentTask.progress, DownloadConstance.WAITING);
+        EventBus.getInstance().postProgress(key, parentTask);
+        ParentTaskCallback callback = ThreadPoolManager.getInstance(key).pause();
+        int size = pauseAndErrorList.size() + mDatas.size();
+        if(callback != null)
+            size++;
+        EventBus.getInstance().postSizeChange(key, size);
     }
 
     public void addParentTasks(List<ParentTaskCallback> parentTasks) {
@@ -54,10 +53,8 @@ public class DataHandleWrapper {
             mDatas.remove(parentTask);
             pauseAndErrorList.remove(parentTask);
             pauseAndErrorList.add(parentTask);
-            //TODO 标记为暂停状态， 并且通过注解回调回去更新界面的展示，
-            // TODO 通过注解更新实体类的属性，
             DownloadUtil.updateDownloadState(parentTask, parentTask.progress, DownloadConstance.DOWNLOAD_PAUSE);
-            //  TODO 从线程池里面暂停当前使用的这个类
+            EventBus.getInstance().postProgress(key, parentTask);
         }
     }
 

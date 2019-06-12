@@ -4,9 +4,9 @@ import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
 import android.os.Environment
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log
 import android.widget.Button
+import androidx.appcompat.app.AppCompatActivity
 import com.richzjc.rdownload.download.constant.NetworkType
 import com.richzjc.rdownload.manager.Confirguration
 import com.richzjc.rdownload.manager.RDownloadManager

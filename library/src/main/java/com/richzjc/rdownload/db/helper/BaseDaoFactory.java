@@ -38,15 +38,14 @@ public class BaseDaoFactory {
     }
 
     // 对外提供一个API
-    public <T> BaseDao getBaseDao(Class<T> beanClazz){
-        String name = beanClazz.getName();
+    public BaseDao getBaseDao(String name){
         if(daoMap.containsKey(name)){
             return daoMap.get(name);
         }else {
             BaseDao baseDao = null;
             try {
                 baseDao = BaseDao.class.newInstance();
-                baseDao.init(sqLiteDatabase, beanClazz);
+                baseDao.init(sqLiteDatabase, Class.forName(name));
             } catch (Exception e) {
                 e.printStackTrace();
             }

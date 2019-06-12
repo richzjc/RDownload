@@ -72,6 +72,7 @@ public class ThreadPoolManager {
             while (true) {
                 if (queue.isEmpty()) {
                     saveCurrentDownloadStatus();
+                    //TODO 这里是否要把parentTaskCallback置为空
                     addNextTask();
                 }
                 try {
