@@ -62,7 +62,11 @@ public class ThreadPoolManager {
     }
 
     public void pause() {
-        //
+        //TODO 直接暂停
+    }
+
+    public void pause(ParentTaskCallback taskCallback){
+        //TODO 暂停指定的任务
     }
 
     class workThread extends Thread{

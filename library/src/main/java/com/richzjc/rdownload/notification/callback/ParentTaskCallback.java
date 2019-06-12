@@ -6,10 +6,8 @@ import java.util.List;
 
 public abstract class ParentTaskCallback {
 
-    int progress = 0;
-    int status = 0;
-    int downloadLength = 0;
-    int totalLength = 0;
+    public int progress = 0;
+    public int status = 0;
 
     public abstract List<DownloadTask> getDownloadTasks();
 

@@ -3,7 +3,9 @@ package com.richzjc.rdownload.util;
 import android.content.Context;
 import android.os.Environment;
 import android.text.TextUtils;
+import android.util.Log;
 import com.richzjc.rdownload.download.task.DownloadTask;
+import com.richzjc.rdownload.notification.callback.ParentTaskCallback;
 
 import java.io.File;
 import java.io.UnsupportedEncodingException;
@@ -50,4 +52,14 @@ public class DownloadUtil {
     public static File getExternalCacheDir(Context context) {
         return new File(Environment.getExternalStorageDirectory().getPath() + ("/Android/data/" + context.getPackageName() + "/download"));
     }
+
+
+    public static void updateDownloadState(ParentTaskCallback obj, int progress, int downloadStatus){
+        if(obj != null){
+            obj.progress = progress;
+            obj.status = downloadStatus;
+        }
+        Log.i("status", obj.toString());
+    }
+
 }

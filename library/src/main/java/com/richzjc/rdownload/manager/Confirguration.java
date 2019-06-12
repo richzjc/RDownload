@@ -1,14 +1,13 @@
 package com.richzjc.rdownload.manager;
 
 import android.content.Context;
-import android.util.Log;
 import com.richzjc.rdownload.download.constant.NetworkType;
 import com.richzjc.rdownload.notification.callback.ParentTaskCallback;
 import com.richzjc.rdownload.data.model.ConfigurationParamsModel;
 import com.richzjc.rdownload.data.wrapper.DataHandleWrapper;
 import com.richzjc.rdownload.util.TDevice;
-
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -20,6 +19,7 @@ import java.util.concurrent.LinkedBlockingQueue;
  */
 public class Confirguration {
 
+    private List<ParentTaskCallback> pauseAndErrorList;
     private ThreadPoolManager poolManager;
     private DataHandleWrapper wrapper;
     public ConfigurationParamsModel paramsModel;
@@ -30,8 +30,7 @@ public class Confirguration {
         this.key = key;
         this.paramsModel = paramsModel;
         mDatas = new LinkedBlockingQueue<>();
-        Log.i("download", "configuration constructor");
-        List<ParentTaskCallback> pauseAndErrorList = new ArrayList<>();
+        pauseAndErrorList = new ArrayList<>();
         wrapper = new DataHandleWrapper(key, mDatas, pauseAndErrorList);
         poolManager = ThreadPoolManager.getInstance(key);
     }
@@ -47,18 +46,20 @@ public class Confirguration {
     }
 
     public void pauseParentTask(ParentTaskCallback parentTask) {
+        poolManager.pause(parentTask);
         wrapper.pauseParentTask(parentTask);
     }
 
     public void pauseAll(){
-
+        poolManager.pause();
+        pauseParentTasks(mDatas);
     }
 
     public void startAll(){
-
+        addParentTasks(pauseAndErrorList);
     }
 
-    public void pauseParentTasks(List<ParentTaskCallback> parentTasks) {
+    public void pauseParentTasks(Collection<ParentTaskCallback> parentTasks) {
         wrapper.pauseParentTasks(parentTasks);
     }
 
@@ -72,7 +73,7 @@ public class Confirguration {
             if(TDevice.isConnectWIFI(paramsModel.context))
                 poolManager.start();
             else
-                poolManager.pause();
+                pauseAll();
         }
     }
 

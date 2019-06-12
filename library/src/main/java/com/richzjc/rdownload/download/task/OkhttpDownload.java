@@ -49,6 +49,7 @@ final class OkhttpDownload {
     }
 
     private void writeFiles(String configurationKey, ResponseBody body, DownloadTask task) {
+        //TODO 这里还包括一些暂停的代码没有写完
         Confirguration confirguration = RDownloadManager.getInstance().getConfiguration(configurationKey);
         File file = new File(DownloadUtil.getDownloadFilePath(confirguration.paramsModel.context, task));
         if (!FileUtil.createFile(file.getAbsolutePath()))
@@ -94,6 +95,7 @@ final class OkhttpDownload {
             Response response = okHttpClient.newCall(request).execute();
             String length = response.header("content-length", "0");
             Log.i("download", "total_length = " + length);
+            //TODO 获取到totalLength后还没有保存下来
         } catch (IOException e) {
             e.printStackTrace();
         }

@@ -6,8 +6,6 @@ import android.text.TextUtils;
 import com.richzjc.rdownload.db.anotations.DbField;
 import com.richzjc.rdownload.db.anotations.DbTable;
 import com.richzjc.rdownload.download.task.DownloadTask;
-import com.richzjc.rdownload.notification.anotation.DownloadProgress;
-import com.richzjc.rdownload.notification.anotation.DownloadState;
 import com.richzjc.rdownload.notification.callback.ParentTaskCallback;
 
 import java.util.ArrayList;
@@ -17,11 +15,9 @@ import java.util.List;
 public class ParentTaskModel extends ParentTaskCallback implements Parcelable {
 
     @DbField(value = "progress")
-    @DownloadProgress
     public int progress;
 
     @DbField(value = "state")
-    @DownloadState
     public int state;
 
     @Override
