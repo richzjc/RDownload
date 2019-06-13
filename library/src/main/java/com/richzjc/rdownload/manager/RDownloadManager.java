@@ -7,7 +7,7 @@ import java.util.HashMap;
  */
 public class RDownloadManager {
     private static volatile RDownloadManager instance;
-    private HashMap<String, Confirguration> map;
+    private HashMap<String, Configuration> map;
 
     public static RDownloadManager getInstance(){
         if (instance == null) {
@@ -25,7 +25,7 @@ public class RDownloadManager {
         map = new HashMap<>();
     }
 
-    public Confirguration getConfiguration(String key){
+    public Configuration getConfiguration(String key){
         if(map.containsKey(key)){
             return map.get(key);
         }else{
@@ -33,12 +33,12 @@ public class RDownloadManager {
         }
     }
 
-    public void setConfiguration(Confirguration confirguration){
-        if(map.containsKey(confirguration.key)){
-            map.remove(confirguration.key);
-            map.put(confirguration.key, confirguration);
+    public void setConfiguration(Configuration configuration){
+        if(map.containsKey(configuration.key)){
+            map.remove(configuration.key);
+            map.put(configuration.key, configuration);
         }else{
-            map.put(confirguration.key, confirguration);
+            map.put(configuration.key, configuration);
         }
     }
 }

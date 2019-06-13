@@ -17,7 +17,7 @@ import java.util.concurrent.LinkedBlockingQueue;
  * 那么这个configuration就需要分开
  * 每一个configuration都有对应的一个key
  */
-public class Confirguration {
+public class Configuration {
 
     private List<ParentTaskCallback> pauseAndErrorList;
     private ThreadPoolManager poolManager;
@@ -26,7 +26,7 @@ public class Confirguration {
     public String key;
     LinkedBlockingQueue<ParentTaskCallback> mDatas;
 
-    private Confirguration(String key, ConfigurationParamsModel paramsModel) {
+    private Configuration(String key, ConfigurationParamsModel paramsModel) {
         this.key = key;
         this.paramsModel = paramsModel;
         mDatas = new LinkedBlockingQueue<>();
@@ -93,13 +93,13 @@ public class Confirguration {
             return this;
         }
 
-        public Confirguration build(Context context) {
+        public Configuration build(Context context) {
             if (context == null)
                 throw new IllegalStateException("context 不能为空");
             ConfigurationParamsModel paramsModel = new ConfigurationParamsModel();
             paramsModel.context = context.getApplicationContext();
             paramsModel.networkType = networkType;
-            return new Confirguration(configurationKey, paramsModel);
+            return new Configuration(configurationKey, paramsModel);
         }
     }
 }

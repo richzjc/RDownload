@@ -1,7 +1,5 @@
 package com.richzjc.rdownload.manager;
 
-import android.text.TextUtils;
-import android.util.Log;
 import com.richzjc.rdownload.download.task.IDownload;
 import com.richzjc.rdownload.download.task.TotalLengthTask;
 import com.richzjc.rdownload.notification.callback.ParentTaskCallback;
@@ -46,8 +44,8 @@ public class ThreadPoolManager {
         //TODO 1、刷新界面，通过注解去刷新界面
         //TODO 2、更新对应实体的属性，主要有进度， 状态，通过注解就可以去完成了
         try {
-            Confirguration confirguration = RDownloadManager.getInstance().getConfiguration(configurationKey);
-            this.parentTaskCallback = confirguration.mDatas.take();
+            Configuration configuration = RDownloadManager.getInstance().getConfiguration(configurationKey);
+            this.parentTaskCallback = configuration.mDatas.take();
             new TotalLengthTask(parentTaskCallback).run(configurationKey);
             queue.addAll(parentTaskCallback.getDownloadTasks());
         } catch (InterruptedException e) {

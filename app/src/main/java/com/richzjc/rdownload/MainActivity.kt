@@ -8,7 +8,7 @@ import android.util.Log
 import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
 import com.richzjc.rdownload.download.constant.NetworkType
-import com.richzjc.rdownload.manager.Confirguration
+import com.richzjc.rdownload.manager.Configuration
 import com.richzjc.rdownload.manager.RDownloadManager
 import com.richzjc.rdownload.notification.rx.EventBus
 
@@ -19,7 +19,7 @@ class MainActivity : AppCompatActivity() {
         Log.i("file", getExternalFilesDir(Environment.DIRECTORY_MUSIC)?.absolutePath ?: "")
 
         setContentView(R.layout.activity_main)
-        val configration = Confirguration.ConfirgurationBuilder()
+        val configration = Configuration.ConfirgurationBuilder()
             .setNetWorkType(NetworkType.WIFI)
             .setConfigurationKey("test")
             .build(applicationContext)

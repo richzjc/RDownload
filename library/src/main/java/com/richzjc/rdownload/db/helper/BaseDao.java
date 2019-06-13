@@ -8,7 +8,9 @@ import android.util.Log;
 import com.richzjc.rdownload.db.anotations.DbField;
 import com.richzjc.rdownload.db.anotations.DbTable;
 import com.richzjc.rdownload.notification.callback.ParentTaskCallback;
+
 import java.lang.reflect.Field;
+import java.lang.reflect.ParameterizedType;
 import java.util.*;
 
 public class BaseDao<T extends ParentTaskCallback> implements IBaseDao<T> {
@@ -69,6 +71,8 @@ public class BaseDao<T extends ParentTaskCallback> implements IBaseDao<T> {
         stringBuffer.append("parentTaskId" + " TEXT ,");
         stringBuffer.append("progress" + " INTEGER ,");
         stringBuffer.append("status" + " INTEGER ,");
+        stringBuffer.append("totalLength" + " LONG ,");
+        stringBuffer.append("downloadLength" + " LONG ,");
         //获取beanClazz对象的所有成员变量
         Field[] declaredFields = beanClazz.getDeclaredFields();
         DbField dbField;
@@ -100,29 +104,54 @@ public class BaseDao<T extends ParentTaskCallback> implements IBaseDao<T> {
 
     @Override
     public void insert(String configurationKey, T bean) {
-        List<T> list = query(new String[]{"parentTaskId"}, "configurationKey = ? and parentTaskId = ?", new String[]{configurationKey, bean.getParentTaskId()});
-        if(list.size() <= 0) {
+        List<T> list = query((Class<T>) bean.getClass(), new String[]{"parentTaskId", "progress", "status"}, "configurationKey = ? and parentTaskId = ?", new String[]{configurationKey, bean.getParentTaskId()});
+        if (list.size() <= 0) {
             Map<String, String> map = getValue(configurationKey, bean);
             // 将map转换成contentvalues
             ContentValues contentValues = getContentValues(map);
-            long result = sqLiteDatabase.insert(tableName, null, contentValues);
-            // 获取对象中的值
-            Log.e("====>", "成功插入" + result + "条数据");
-        }else{
-            bean.progress =list.get(0).progress;
+            sqLiteDatabase.insert(tableName, null, contentValues);
+        } else {
+            bean.progress = list.get(0).progress;
             bean.status = list.get(0).status;
         }
     }
 
-    public List<T> query(String[] columns, String selection, String[] selectionArgs) {
-        //TODO 这个地方 还可以继续优化一下
+    public List<T> query(Class<T> cls, String[] columns, String selection, String[] selectionArgs) {
         List<T> list = new ArrayList<>();
         Cursor cursor = sqLiteDatabase.query(tableName, columns, selection, selectionArgs, null, null, null);
         Log.i("download", cursor.getCount() + "");
         if (cursor.moveToFirst()) {
+            T entity;
+            String value;
             do {
-//                String name = cursor.getString(cursor.getColumnIndex("progress"));
-//                Log.i("download", tableName + ": " + name);
+                try {
+                    entity = cls.newInstance();
+                    for(String column : columns){
+                        value = cursor.getString(cursor.getColumnIndex(column));
+                        try {
+                            Field field = cls.getDeclaredField(column);
+                            if(field != null){
+                                field.setAccessible(true);
+                                if (field.getType() == String.class) {
+                                    field.set(entity, value);
+                                } else if (TextUtils.equals(field.getName(), Integer.class.getName()) || TextUtils.equals(field.getName(), "int")) {
+                                    field.set(entity, Integer.parseInt(value));
+                                } else if (TextUtils.equals(field.getName(), Long.class.getName()) || TextUtils.equals(field.getName(), "long")) {
+                                    field.set(entity, Integer.parseInt(value));
+                                } else {
+                                    field.set(entity, value);
+                                }
+                            }
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    list.add(entity);
+                } catch (IllegalAccessException e) {
+                    e.printStackTrace();
+                } catch (InstantiationException e) {
+                    e.printStackTrace();
+                }
             }
             while (cursor.moveToNext());
         }
@@ -151,6 +180,8 @@ public class BaseDao<T extends ParentTaskCallback> implements IBaseDao<T> {
         map.put("parentTaskId", bean.getParentTaskId());
         map.put("progress", String.valueOf(bean.progress));
         map.put("status", String.valueOf(bean.status));
+        map.put("totalLength", String.valueOf(bean.totalLength));
+        map.put("downloadLength", String.valueOf(bean.downloadLength));
         // 从缓存map中获取成员变量
         Iterator<Field> iterator = cacheMap.values().iterator();
         while (iterator.hasNext()) {
