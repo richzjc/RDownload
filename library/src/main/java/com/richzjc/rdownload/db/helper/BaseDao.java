@@ -103,7 +103,7 @@ public class BaseDao<T extends ParentTaskCallback> implements IBaseDao<T> {
 
     @Override
     public void insert(String configurationKey, T bean) {
-        List<T> list = query((Class<T>) bean.getClass(), new String[]{"parentTaskId", "progress", "status"}, "configurationKey = ? and parentTaskId = ?", new String[]{configurationKey, bean.getParentTaskId()});
+        List<T> list = query(new String[]{"parentTaskId", "progress", "status"}, "configurationKey = ? and parentTaskId = ?", new String[]{configurationKey, bean.getParentTaskId()});
         if (list.size() <= 0) {
             Map<String, String> map = getValue(configurationKey, bean);
             // 将map转换成contentvalues
@@ -117,14 +117,19 @@ public class BaseDao<T extends ParentTaskCallback> implements IBaseDao<T> {
         }
     }
 
-    public List<T> query(Class<T> cls, String[] columns, String selection, String[] selectionArgs) {
+    @Override
+    public void update(ContentValues values, String whereClause, String[] whereArgs){
+        sqLiteDatabase.update(tableName, values, whereClause, whereArgs);
+    }
+
+    public List<T> query(String[] columns, String selection, String[] selectionArgs) {
         List<T> list = new ArrayList<>();
         Cursor cursor = sqLiteDatabase.query(tableName, columns, selection, selectionArgs, null, null, null);
         Log.i("download", cursor.getCount() + "");
         if (cursor.moveToFirst()) {
             T entity;
             String value;
-            Field[] fields = cls.getFields();
+            Field[] fields = beanClazz.getFields();
             Map<String, Field> map = new HashMap<>();
             for(Field field : fields){
                 for(String column : columns){
@@ -135,7 +140,7 @@ public class BaseDao<T extends ParentTaskCallback> implements IBaseDao<T> {
             }
             do {
                 try {
-                    entity = cls.newInstance();
+                    entity = beanClazz.newInstance();
                     for(String column : columns){
                         value = cursor.getString(cursor.getColumnIndex(column));
                         try {

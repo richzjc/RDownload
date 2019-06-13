@@ -1,5 +1,8 @@
 package com.richzjc.rdownload.manager;
 
+import android.content.ContentValues;
+import android.content.Context;
+import com.richzjc.rdownload.db.helper.BaseDaoFactory;
 import com.richzjc.rdownload.download.constant.DownloadConstants;
 import com.richzjc.rdownload.download.task.IDownload;
 import com.richzjc.rdownload.download.task.TotalLengthTask;
@@ -48,6 +51,14 @@ public class ThreadPoolManager {
                 DownloadUtil.updateDownloadState(parentTaskCallback, parentTaskCallback.progress, DownloadConstants.DOWNLOAD_PAUSE);
                 EventBus.getInstance().postProgress(configurationKey, parentTaskCallback);
             }
+
+            Context context = RDownloadManager.getInstance().getConfiguration(configurationKey).paramsModel.context;
+            ContentValues values = new ContentValues();
+            values.put("progress", parentTaskCallback.progress);
+            values.put("status", parentTaskCallback.status);
+            values.put("totalLength", parentTaskCallback.totalLength);
+            values.put("downloadLength", parentTaskCallback.downloadLength);
+            BaseDaoFactory.getInstance(context).getBaseDao(parentTaskCallback.getClass().getName()).update(values, "configurationKey = ? and parentTaskId = ?", new String[]{configurationKey, parentTaskCallback.getParentTaskId()});
         }
     }
 

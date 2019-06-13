@@ -16,6 +16,7 @@ import com.richzjc.rdownload.notification.anotation.ProgressSubscribe;
 import com.richzjc.rdownload.notification.callback.ParentTaskCallback;
 import com.richzjc.rdownload.notification.rx.EventBus;
 import com.richzjc.rdownload.widget.ProgressWscnImageView;
+
 import java.util.List;
 
 public class DonwloadDetailActivity extends AppCompatActivity {
@@ -39,39 +40,43 @@ public class DonwloadDetailActivity extends AppCompatActivity {
         setContentView(R.layout.paid_recycler_item_downloading_article);
         ButterKnife.bind(this, this);
         List<ParentTaskCallback> list = RDownloadManager.getInstance().getConfiguration("test").getAllData();
-        if(list.size() > 0)
+        if (list.size() > 0)
             parentTaskCallback = list.get(0);
         init();
         EventBus.getInstance().register(this);
         imageParent.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(parentTaskCallback != null)
-                    RDownloadManager.getInstance().getConfiguration("test").pauseParentTask(parentTaskCallback);
+                if (parentTaskCallback != null) {
+                    if (parentTaskCallback.status == DownloadConstants.WAITING || parentTaskCallback.status == DownloadConstants.DOWNLOADING)
+                        RDownloadManager.getInstance().getConfiguration("test").pauseParentTask(parentTaskCallback);
+                    else
+                        RDownloadManager.getInstance().getConfiguration("test").addParentTask(parentTaskCallback);
+                }
             }
         });
     }
 
-    private void init(){
+    private void init() {
         Log.i("download", "init");
-        if(parentTaskCallback != null){
-            if(parentTaskCallback.status == DownloadConstants.DOWNLOADING){
+        if (parentTaskCallback != null) {
+            if (parentTaskCallback.status == DownloadConstants.DOWNLOADING) {
                 showState.setText(parentTaskCallback.progress + "%");
-            }else if(parentTaskCallback.status == DownloadConstants.DOWNLOAD_FINISH){
+            } else if (parentTaskCallback.status == DownloadConstants.DOWNLOAD_FINISH) {
                 showState.setText("下载完成");
-            }else if(parentTaskCallback.status == DownloadConstants.WAITING){
+            } else if (parentTaskCallback.status == DownloadConstants.WAITING) {
                 showState.setText("等待缓存");
-            }else if(parentTaskCallback.status == DownloadConstants.DOWNLOAD_PAUSE){
+            } else if (parentTaskCallback.status == DownloadConstants.DOWNLOAD_PAUSE) {
                 showState.setText("暂停下载");
-            }else if(parentTaskCallback.status == DownloadConstants.DOWNLOAD_ERROR){
+            } else if (parentTaskCallback.status == DownloadConstants.DOWNLOAD_ERROR) {
                 showState.setText("下载失败");
             }
         }
     }
 
     @ProgressSubscribe(configurationKey = "test")
-    private void updateProgress(ParentTaskCallback taskCallback){
-        if(TextUtils.equals(taskCallback.getParentTaskId(), parentTaskCallback.getParentTaskId())){
+    private void updateProgress(ParentTaskCallback taskCallback) {
+        if (TextUtils.equals(taskCallback.getParentTaskId(), parentTaskCallback.getParentTaskId())) {
             init();
         }
     }
