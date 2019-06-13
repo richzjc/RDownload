@@ -1,5 +1,11 @@
 package com.richzjc.rdownload.download.task;
 
+import com.richzjc.rdownload.data.model.ConfigurationParamsModel;
+import com.richzjc.rdownload.download.constant.NetworkType;
+import com.richzjc.rdownload.manager.Configuration;
+import com.richzjc.rdownload.manager.RDownloadManager;
+import com.richzjc.rdownload.util.TDevice;
+
 public class DownloadTask implements IDownload {
 
     private String url;
@@ -19,7 +25,12 @@ public class DownloadTask implements IDownload {
 
     @Override
     public void run(String configurationKey) {
-        //TODO 判断当前的网络是否能去执行下载的逻辑
-        OkhttpDownload.getInstance().download(configurationKey,this);
+        ConfigurationParamsModel paramsModel = RDownloadManager.getInstance().getConfiguration(configurationKey).paramsModel;
+        if(paramsModel.networkType == NetworkType.WIFI){
+            if(TDevice.isConnectWIFI(paramsModel.context))
+                OkhttpDownload.getInstance().download(configurationKey,this);
+        }else{
+            OkhttpDownload.getInstance().download(configurationKey,this);
+        }
     }
 }

@@ -51,8 +51,9 @@ public class Configuration {
 
     public void pauseAll(){
         ParentTaskCallback callback = poolManager.getDownloadParentTask();
-        if(callback != null)
+        if(callback != null) {
             pauseParentTask(callback);
+        }
         pauseParentTasks(mDatas);
     }
 

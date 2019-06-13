@@ -16,7 +16,6 @@ import com.richzjc.rdownload.notification.anotation.ProgressSubscribe;
 import com.richzjc.rdownload.notification.callback.ParentTaskCallback;
 import com.richzjc.rdownload.notification.rx.EventBus;
 import com.richzjc.rdownload.widget.ProgressWscnImageView;
-
 import java.util.List;
 
 public class DonwloadDetailActivity extends AppCompatActivity {
