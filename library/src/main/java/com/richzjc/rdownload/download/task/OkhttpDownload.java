@@ -102,8 +102,4 @@ final class OkhttpDownload {
             return 0;
         }
     }
-
-    private boolean check(ParentTaskCallback taskCallback){
-        return taskCallback.totalLength == taskCallback.downloadLength && taskCallback.totalLength != 0;
-    }
 }

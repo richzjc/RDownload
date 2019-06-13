@@ -113,6 +113,8 @@ public class BaseDao<T extends ParentTaskCallback> implements IBaseDao<T> {
         } else {
             bean.progress = list.get(0).progress;
             bean.status = list.get(0).status;
+            bean.totalLength = list.get(0).totalLength;
+            bean.downloadLength = list.get(0).downloadLength;
         }
     }
 
@@ -123,20 +125,29 @@ public class BaseDao<T extends ParentTaskCallback> implements IBaseDao<T> {
         if (cursor.moveToFirst()) {
             T entity;
             String value;
+            Field[] fields = cls.getFields();
+            Map<String, Field> map = new HashMap<>();
+            for(Field field : fields){
+                for(String column : columns){
+                    if(TextUtils.equals(field.getName(), column)){
+                        map.put(column, field);
+                    }
+                }
+            }
             do {
                 try {
                     entity = cls.newInstance();
                     for(String column : columns){
                         value = cursor.getString(cursor.getColumnIndex(column));
                         try {
-                            Field field = cls.getDeclaredField(column);
+                            Field field = map.get(column);
                             if(field != null){
                                 field.setAccessible(true);
                                 if (field.getType() == String.class) {
                                     field.set(entity, value);
-                                } else if (TextUtils.equals(field.getName(), Integer.class.getName()) || TextUtils.equals(field.getName(), "int")) {
+                                } else if (TextUtils.equals(field.getType().getName(), Integer.class.getName()) || TextUtils.equals(field.getType().getName(), "int")) {
                                     field.set(entity, Integer.parseInt(value));
-                                } else if (TextUtils.equals(field.getName(), Long.class.getName()) || TextUtils.equals(field.getName(), "long")) {
+                                } else if (TextUtils.equals(field.getType().getName(), Long.class.getName()) || TextUtils.equals(field.getType().getName(), "long")) {
                                     field.set(entity, Integer.parseInt(value));
                                 } else {
                                     field.set(entity, value);
