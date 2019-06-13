@@ -10,7 +10,6 @@ import com.richzjc.rdownload.db.anotations.DbTable;
 import com.richzjc.rdownload.notification.callback.ParentTaskCallback;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.ParameterizedType;
 import java.util.*;
 
 public class BaseDao<T extends ParentTaskCallback> implements IBaseDao<T> {
@@ -53,7 +52,7 @@ public class BaseDao<T extends ParentTaskCallback> implements IBaseDao<T> {
 
     private void initCacheMap() {
         // 获取类对象的所有成员变量
-        Field[] declaredFields = beanClazz.getDeclaredFields();
+        Field[] declaredFields = beanClazz.getFields();
         for (Field declaredField : declaredFields) {
             DbField dbField = declaredField.getAnnotation(DbField.class);
             if (dbField != null) {
