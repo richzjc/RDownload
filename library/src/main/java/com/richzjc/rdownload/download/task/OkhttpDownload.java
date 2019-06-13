@@ -1,9 +1,12 @@
 package com.richzjc.rdownload.download.task;
 
 import android.util.Log;
+import com.richzjc.rdownload.download.constant.DownloadConstants;
 import com.richzjc.rdownload.manager.Configuration;
 import com.richzjc.rdownload.manager.RDownloadManager;
+import com.richzjc.rdownload.manager.ThreadPoolManager;
 import com.richzjc.rdownload.notification.callback.ParentTaskCallback;
+import com.richzjc.rdownload.notification.rx.EventBus;
 import com.richzjc.rdownload.util.DownloadUtil;
 import com.richzjc.rdownload.util.FileUtil;
 import okhttp3.OkHttpClient;
@@ -33,27 +36,28 @@ final class OkhttpDownload {
     }
 
     public void download(String configurationKey, DownloadTask task) {
+        Configuration configuration = RDownloadManager.getInstance().getConfiguration(configurationKey);
+        File file = new File(DownloadUtil.getDownloadFilePath(configuration.paramsModel.context, task));
+        if (!FileUtil.createFile(file.getAbsolutePath()))
+            return;
+        String range = "bytes=" + file.length() + "-";
         String url = task.getUrl();
         Request request = new Request.Builder().url(url)
-                .addHeader("RANGE", "0")
+                .addHeader("RANGE", range)
                 .addHeader("Connection", "close")
                 .build();
         try {
             Response response = okHttpClient.newCall(request).execute();
             ResponseBody body = response.body();
             Log.i("body", body.contentType().toString());
-            writeFiles(configurationKey, body, task);
-        } catch (IOException e) {
+            writeFiles(configurationKey, body, file);
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    private void writeFiles(String configurationKey, ResponseBody body, DownloadTask task) {
-        //TODO 这里还包括一些暂停的代码没有写完
-        Configuration configuration = RDownloadManager.getInstance().getConfiguration(configurationKey);
-        File file = new File(DownloadUtil.getDownloadFilePath(configuration.paramsModel.context, task));
-        if (!FileUtil.createFile(file.getAbsolutePath()))
-            return;
+    private void writeFiles(String configurationKey, ResponseBody body, File file) {
+        ParentTaskCallback taskCallback = ThreadPoolManager.getInstance(configurationKey).getDownloadParentTask();
         try {
             RandomAccessFile accessFile = new RandomAccessFile(file, "rw");
             accessFile.seek(0);
@@ -64,25 +68,46 @@ final class OkhttpDownload {
             do {
                 readCount = bufferedInputStream.read(buffer);
                 if (readCount != -1) {
-                    accessFile.write(buffer, 0, readCount);
+                    if (taskCallback.status == DownloadConstants.DOWNLOADING) {
+                        accessFile.write(buffer, 0, readCount);
+                        taskCallback.downloadLength += readCount;
+                        taskCallback.updateProgress();
+                        DownloadUtil.updateDownloadState(taskCallback, taskCallback.progress, DownloadConstants.DOWNLOADING);
+                        EventBus.getInstance().postProgress(configurationKey, taskCallback);
+                    } else {
+                        break;
+                    }
                 } else {
                     break;
                 }
             } while (true);
             accessFile.close();
             bufferedInputStream.close();
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
 
-    public void getTaskTotalLength(ParentTaskCallback ptc){
+    public void getTaskTotalLength(String configurationKey, ParentTaskCallback ptc) {
         ptc.totalLength = 0;
-       List<DownloadTask> list = ptc.getDownloadTasks();
-       for(DownloadTask task : list){
-           ptc.totalLength +=getLengthByUrl(task);
-       }
+        long downloadLength = 0;
+        List<DownloadTask> list = ptc.getDownloadTasks();
+        for (DownloadTask task : list) {
+            ptc.totalLength += getLengthByUrl(task);
+            downloadLength += getDownloadLength(configurationKey, task);
+        }
+        if (downloadLength != ptc.downloadLength)
+            ptc.downloadLength = downloadLength;
+    }
+
+    private long getDownloadLength(String configurationKey, DownloadTask task) {
+        Configuration configuration = RDownloadManager.getInstance().getConfiguration(configurationKey);
+        File file = new File(DownloadUtil.getDownloadFilePath(configuration.paramsModel.context, task));
+        if (file.exists())
+            return file.length();
+        else
+            return 0;
     }
 
     private long getLengthByUrl(DownloadTask task) {

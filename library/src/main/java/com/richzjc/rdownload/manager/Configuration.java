@@ -50,7 +50,7 @@ public class Configuration {
     }
 
     public void pauseAll(){
-        ParentTaskCallback callback = poolManager.pause();
+        ParentTaskCallback callback = poolManager.getDownloadParentTask();
         if(callback != null)
             pauseParentTask(callback);
         pauseParentTasks(mDatas);
@@ -76,6 +76,19 @@ public class Configuration {
             else
                 pauseAll();
         }
+    }
+
+    public List<ParentTaskCallback> getAllData() {
+        List<ParentTaskCallback> list = new ArrayList<>();
+        if(poolManager.getDownloadParentTask() != null)
+            list.add(poolManager.getDownloadParentTask());
+        list.addAll(mDatas);
+        list.addAll(pauseAndErrorList);
+        return list;
+    }
+
+    public int getDownloadSize() {
+        return mDatas.size() + pauseAndErrorList.size();
     }
 
     public static final class ConfirgurationBuilder {

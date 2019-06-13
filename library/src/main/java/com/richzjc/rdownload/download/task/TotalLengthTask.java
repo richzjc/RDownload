@@ -9,6 +9,6 @@ public class TotalLengthTask implements IDownload {
     }
     @Override
     public void run(String configurationKey) {
-        OkhttpDownload.getInstance().getTaskTotalLength(ptc);
+        OkhttpDownload.getInstance().getTaskTotalLength(configurationKey, ptc);
     }
 }

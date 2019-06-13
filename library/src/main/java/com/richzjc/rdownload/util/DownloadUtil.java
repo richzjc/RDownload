@@ -19,9 +19,6 @@ public class DownloadUtil {
         if(file == null)
             file = getExternalCacheDir(context);
         String path = TextUtils.concat(file.getAbsolutePath(), "/", String.valueOf(task.getUrl().hashCode()), getSuffix(task.getUrl())).toString();
-        File f = new File(path);
-        if(f.exists())
-            Log.i("download", "fileSize = " + f.length());
         return path;
     }
 

@@ -14,4 +14,12 @@ public abstract class ParentTaskCallback {
     public abstract List<DownloadTask> getDownloadTasks();
 
     public abstract String getParentTaskId();
+
+    public void updateProgress() {
+        if (totalLength != 0) {
+            progress = Math.round(downloadLength * 100f / totalLength);
+        } else {
+            progress = 0;
+        }
+    }
 }

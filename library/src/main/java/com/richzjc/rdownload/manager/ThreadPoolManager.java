@@ -1,8 +1,11 @@
 package com.richzjc.rdownload.manager;
 
+import com.richzjc.rdownload.download.constant.DownloadConstants;
 import com.richzjc.rdownload.download.task.IDownload;
 import com.richzjc.rdownload.download.task.TotalLengthTask;
 import com.richzjc.rdownload.notification.callback.ParentTaskCallback;
+import com.richzjc.rdownload.notification.rx.EventBus;
+import com.richzjc.rdownload.util.DownloadUtil;
 import java.util.HashMap;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -33,44 +36,54 @@ public class ThreadPoolManager {
 
     private void saveCurrentDownloadStatus() {
         if (parentTaskCallback != null) {
-            //TODO 判断是下载完成了，还是下载失败了，两种对应逻辑的处理
-            //关键点在于怎么去判断 是下载完成了 还是下载失败了，或者是暂停了
+            if(parentTaskCallback.downloadLength == parentTaskCallback.totalLength){
+                DownloadUtil.updateDownloadState(parentTaskCallback, parentTaskCallback.progress, DownloadConstants.DOWNLOAD_FINISH);
+                EventBus.getInstance().postProgress(configurationKey, parentTaskCallback);
+                int size = RDownloadManager.getInstance().getConfiguration(configurationKey).getDownloadSize();
+                EventBus.getInstance().postSizeChange(configurationKey, size);
+            }else if(parentTaskCallback.status != DownloadConstants.DOWNLOAD_PAUSE){
+                DownloadUtil.updateDownloadState(parentTaskCallback, parentTaskCallback.progress, DownloadConstants.DOWNLOAD_ERROR);
+                EventBus.getInstance().postProgress(configurationKey, parentTaskCallback);
+            }else{
+                DownloadUtil.updateDownloadState(parentTaskCallback, parentTaskCallback.progress, DownloadConstants.DOWNLOAD_PAUSE);
+                EventBus.getInstance().postProgress(configurationKey, parentTaskCallback);
+            }
         }
     }
 
 
     public void addNextTask() {
-        //TODO 标记进行到下载的逻辑，则要
-        //TODO 1、刷新界面，通过注解去刷新界面
-        //TODO 2、更新对应实体的属性，主要有进度， 状态，通过注解就可以去完成了
         try {
             Configuration configuration = RDownloadManager.getInstance().getConfiguration(configurationKey);
             this.parentTaskCallback = configuration.mDatas.take();
+            DownloadUtil.updateDownloadState(parentTaskCallback, parentTaskCallback.progress, DownloadConstants.DOWNLOADING);
+            EventBus.getInstance().postProgress(configurationKey, parentTaskCallback);
             new TotalLengthTask(parentTaskCallback).run(configurationKey);
             queue.addAll(parentTaskCallback.getDownloadTasks());
-        } catch (InterruptedException e) {
+        } catch (Exception e) {
             e.printStackTrace();
+            saveCurrentDownloadStatus();
         }
     }
 
     public void start() {
-        if(workThread == null){
+        if (workThread == null) {
             workThread = new workThread();
             workThread.start();
         }
     }
 
-    public ParentTaskCallback pause() {
+    public ParentTaskCallback getDownloadParentTask() {
         return parentTaskCallback;
     }
 
-    class workThread extends Thread{
+    class workThread extends Thread {
         @Override
         public void run() {
             while (true) {
                 if (queue.isEmpty()) {
                     saveCurrentDownloadStatus();
-                    //TODO 这里是否要把parentTaskCallback置为空
+                    parentTaskCallback = null;
                     addNextTask();
                 }
                 try {

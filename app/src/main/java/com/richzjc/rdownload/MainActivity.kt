@@ -36,9 +36,6 @@ class MainActivity : AppCompatActivity() {
             val model = ParentTaskModel()
             RDownloadManager.getInstance().getConfiguration("test").addParentTask(model);
             val intent = Intent(this@MainActivity, DonwloadDetailActivity::class.java)
-            val extra = Bundle()
-            extra.putParcelable("model", model)
-            intent.putExtras(extra)
             startActivity(intent)
         }
     }

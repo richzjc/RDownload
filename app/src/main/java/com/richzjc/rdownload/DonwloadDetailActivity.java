@@ -3,6 +3,7 @@ package com.richzjc.rdownload;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.View;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import androidx.annotation.Nullable;
@@ -10,10 +11,13 @@ import androidx.appcompat.app.AppCompatActivity;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import com.richzjc.rdownload.download.constant.DownloadConstants;
+import com.richzjc.rdownload.manager.RDownloadManager;
 import com.richzjc.rdownload.notification.anotation.ProgressSubscribe;
 import com.richzjc.rdownload.notification.callback.ParentTaskCallback;
 import com.richzjc.rdownload.notification.rx.EventBus;
 import com.richzjc.rdownload.widget.ProgressWscnImageView;
+
+import java.util.List;
 
 public class DonwloadDetailActivity extends AppCompatActivity {
 
@@ -35,9 +39,18 @@ public class DonwloadDetailActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.paid_recycler_item_downloading_article);
         ButterKnife.bind(this, this);
-        parentTaskCallback = getIntent().getExtras().getParcelable("model");
+        List<ParentTaskCallback> list = RDownloadManager.getInstance().getConfiguration("test").getAllData();
+        if(list.size() > 0)
+            parentTaskCallback = list.get(0);
         init();
         EventBus.getInstance().register(this);
+        imageParent.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(parentTaskCallback != null)
+                    RDownloadManager.getInstance().getConfiguration("test").pauseParentTask(parentTaskCallback);
+            }
+        });
     }
 
     private void init(){
@@ -51,6 +64,8 @@ public class DonwloadDetailActivity extends AppCompatActivity {
                 showState.setText("等待缓存");
             }else if(parentTaskCallback.status == DownloadConstants.DOWNLOAD_PAUSE){
                 showState.setText("暂停下载");
+            }else if(parentTaskCallback.status == DownloadConstants.DOWNLOAD_ERROR){
+                showState.setText("下载失败");
             }
         }
     }

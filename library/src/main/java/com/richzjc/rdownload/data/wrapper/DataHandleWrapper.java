@@ -33,7 +33,7 @@ public class DataHandleWrapper {
         mDatas.add(parentTask);
         DownloadUtil.updateDownloadState(parentTask, parentTask.progress, DownloadConstants.WAITING);
         EventBus.getInstance().postProgress(key, parentTask);
-        ParentTaskCallback callback = ThreadPoolManager.getInstance(key).pause();
+        ParentTaskCallback callback = ThreadPoolManager.getInstance(key).getDownloadParentTask();
         int size = pauseAndErrorList.size() + mDatas.size();
         if(callback != null)
             size++;
