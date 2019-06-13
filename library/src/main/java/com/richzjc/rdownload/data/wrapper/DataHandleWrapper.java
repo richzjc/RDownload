@@ -8,6 +8,7 @@ import com.richzjc.rdownload.manager.ThreadPoolManager;
 import com.richzjc.rdownload.notification.callback.ParentTaskCallback;
 import com.richzjc.rdownload.notification.rx.EventBus;
 import com.richzjc.rdownload.util.DownloadUtil;
+
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -25,17 +26,15 @@ public class DataHandleWrapper {
     }
 
     public void addParentTask(ParentTaskCallback parentTask) {
-        Context context = RDownloadManager.getInstance().getConfiguration(key).paramsModel.context;
-        BaseDaoFactory.getInstance(context).getBaseDao(parentTask.getClass().getName()).insert(key, parentTask);
-
+        RDownloadManager.getInstance().insert(key, parentTask);
         mDatas.remove(parentTask);
         pauseAndErrorList.remove(parentTask);
         mDatas.add(parentTask);
         DownloadUtil.updateDownloadState(parentTask, parentTask.progress, DownloadConstants.WAITING);
         EventBus.getInstance().postProgress(key, parentTask);
-        ParentTaskCallback callback = ThreadPoolManager.getInstance(key).getDownloadParentTask();
+        ParentTaskCallback callback = RDownloadManager.getInstance().getCurrentDownloadPTask(key);
         int size = pauseAndErrorList.size() + mDatas.size();
-        if(callback != null)
+        if (callback != null)
             size++;
         EventBus.getInstance().postSizeChange(key, size);
     }

@@ -1,6 +1,5 @@
 package com.richzjc.rdownload.manager;
 
-import android.content.Context;
 import com.richzjc.rdownload.download.constant.NetworkType;
 import com.richzjc.rdownload.notification.callback.ParentTaskCallback;
 import com.richzjc.rdownload.data.model.ConfigurationParamsModel;
@@ -20,19 +19,19 @@ import java.util.concurrent.LinkedBlockingQueue;
 public class Configuration {
 
     private List<ParentTaskCallback> pauseAndErrorList;
-    private ThreadPoolManager poolManager;
+    public ThreadPoolManager poolManager;
     private DataHandleWrapper wrapper;
     public ConfigurationParamsModel paramsModel;
     public String key;
     LinkedBlockingQueue<ParentTaskCallback> mDatas;
 
-    private Configuration(String key, ConfigurationParamsModel paramsModel) {
+    public Configuration(String key, ConfigurationParamsModel paramsModel) {
         this.key = key;
         this.paramsModel = paramsModel;
         mDatas = new LinkedBlockingQueue<>();
         pauseAndErrorList = new ArrayList<>();
         wrapper = new DataHandleWrapper(key, mDatas, pauseAndErrorList);
-        poolManager = ThreadPoolManager.getInstance(key);
+        poolManager = new ThreadPoolManager(key, mDatas);
     }
 
     public void addParentTask(ParentTaskCallback parentTask) {
@@ -49,15 +48,15 @@ public class Configuration {
         wrapper.pauseParentTask(parentTask);
     }
 
-    public void pauseAll(){
+    public void pauseAll() {
         ParentTaskCallback callback = poolManager.getDownloadParentTask();
-        if(callback != null) {
+        if (callback != null) {
             pauseParentTask(callback);
         }
         pauseParentTasks(mDatas);
     }
 
-    public void startAll(){
+    public void startAll() {
         addParentTasks(pauseAndErrorList);
     }
 
@@ -71,8 +70,8 @@ public class Configuration {
 
     public void setNetWorkType(NetworkType netWorkType) {
         paramsModel.networkType = netWorkType;
-        if(netWorkType == NetworkType.WIFI){
-            if(TDevice.isConnectWIFI(paramsModel.context))
+        if (netWorkType == NetworkType.WIFI) {
+            if (TDevice.isConnectWIFI(paramsModel.context))
                 poolManager.start();
             else
                 pauseAll();
@@ -81,7 +80,7 @@ public class Configuration {
 
     public List<ParentTaskCallback> getAllData() {
         List<ParentTaskCallback> list = new ArrayList<>();
-        if(poolManager.getDownloadParentTask() != null)
+        if (poolManager.getDownloadParentTask() != null)
             list.add(poolManager.getDownloadParentTask());
         list.addAll(mDatas);
         list.addAll(pauseAndErrorList);
@@ -90,30 +89,5 @@ public class Configuration {
 
     public int getDownloadSize() {
         return mDatas.size() + pauseAndErrorList.size();
-    }
-
-    public static final class ConfirgurationBuilder {
-
-        private NetworkType networkType = NetworkType.WIFI;
-        private String configurationKey;
-
-        public ConfirgurationBuilder setNetWorkType(NetworkType workType) {
-            this.networkType = workType;
-            return this;
-        }
-
-        public ConfirgurationBuilder setConfigurationKey(String configurationKey) {
-            this.configurationKey = configurationKey;
-            return this;
-        }
-
-        public Configuration build(Context context) {
-            if (context == null)
-                throw new IllegalStateException("context 不能为空");
-            ConfigurationParamsModel paramsModel = new ConfigurationParamsModel();
-            paramsModel.context = context.getApplicationContext();
-            paramsModel.networkType = networkType;
-            return new Configuration(configurationKey, paramsModel);
-        }
     }
 }

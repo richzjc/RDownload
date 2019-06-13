@@ -1,80 +1,42 @@
 package com.richzjc.rdownload.manager;
 
-import android.content.ContentValues;
-import android.content.Context;
-import com.richzjc.rdownload.db.helper.BaseDaoFactory;
 import com.richzjc.rdownload.download.constant.DownloadConstants;
-import com.richzjc.rdownload.download.task.IDownload;
+import com.richzjc.rdownload.download.task.DownloadTask;
 import com.richzjc.rdownload.download.task.TotalLengthTask;
 import com.richzjc.rdownload.notification.callback.ParentTaskCallback;
 import com.richzjc.rdownload.notification.rx.EventBus;
 import com.richzjc.rdownload.util.DownloadUtil;
-import java.util.HashMap;
 import java.util.concurrent.LinkedBlockingQueue;
 
 public class ThreadPoolManager {
 
-    private static HashMap<String, ThreadPoolManager> map;
-    private LinkedBlockingQueue<IDownload> queue;
     private ParentTaskCallback parentTaskCallback;
     private String configurationKey;
+    private LinkedBlockingQueue<ParentTaskCallback> mDatas;
     private workThread workThread;
 
-    public static ThreadPoolManager getInstance(String configurationKey) {
-        if (map == null)
-            map = new HashMap<>();
-        if (map.containsKey(configurationKey))
-            return map.get(configurationKey);
-        else {
-            ThreadPoolManager poolManager = new ThreadPoolManager(configurationKey);
-            map.put(configurationKey, poolManager);
-            return poolManager;
-        }
-    }
-
-    private ThreadPoolManager(String configurationKey) {
+    public ThreadPoolManager(String configurationKey, LinkedBlockingQueue<ParentTaskCallback> mDatas) {
         this.configurationKey = configurationKey;
-        queue = new LinkedBlockingQueue<>();
+        this.mDatas = mDatas;
     }
 
     private void saveCurrentDownloadStatus() {
         if (parentTaskCallback != null) {
-            if(parentTaskCallback.downloadLength == parentTaskCallback.totalLength){
+            if (parentTaskCallback.downloadLength == parentTaskCallback.totalLength) {
                 DownloadUtil.updateDownloadState(parentTaskCallback, parentTaskCallback.progress, DownloadConstants.DOWNLOAD_FINISH);
                 EventBus.getInstance().postProgress(configurationKey, parentTaskCallback);
-                int size = RDownloadManager.getInstance().getConfiguration(configurationKey).getDownloadSize();
+                int size = RDownloadManager.getInstance().getDownloadSize(configurationKey);
                 EventBus.getInstance().postSizeChange(configurationKey, size);
-            }else if(parentTaskCallback.status != DownloadConstants.DOWNLOAD_PAUSE){
+            } else if (parentTaskCallback.status != DownloadConstants.DOWNLOAD_PAUSE) {
                 DownloadUtil.updateDownloadState(parentTaskCallback, parentTaskCallback.progress, DownloadConstants.DOWNLOAD_ERROR);
                 EventBus.getInstance().postProgress(configurationKey, parentTaskCallback);
-            }else{
+            } else {
                 DownloadUtil.updateDownloadState(parentTaskCallback, parentTaskCallback.progress, DownloadConstants.DOWNLOAD_PAUSE);
                 EventBus.getInstance().postProgress(configurationKey, parentTaskCallback);
             }
 
-            Context context = RDownloadManager.getInstance().getConfiguration(configurationKey).paramsModel.context;
-            ContentValues values = new ContentValues();
-            values.put("progress", parentTaskCallback.progress);
-            values.put("status", parentTaskCallback.status);
-            values.put("totalLength", parentTaskCallback.totalLength);
-            values.put("downloadLength", parentTaskCallback.downloadLength);
-            BaseDaoFactory.getInstance(context).getBaseDao(parentTaskCallback.getClass().getName()).update(values, "configurationKey = ? and parentTaskId = ?", new String[]{configurationKey, parentTaskCallback.getParentTaskId()});
-        }
-    }
-
-
-    public void addNextTask() {
-        try {
-            Configuration configuration = RDownloadManager.getInstance().getConfiguration(configurationKey);
-            this.parentTaskCallback = configuration.mDatas.take();
-            DownloadUtil.updateDownloadState(parentTaskCallback, parentTaskCallback.progress, DownloadConstants.DOWNLOADING);
-            EventBus.getInstance().postProgress(configurationKey, parentTaskCallback);
-            new TotalLengthTask(parentTaskCallback).run(configurationKey);
-            queue.addAll(parentTaskCallback.getDownloadTasks());
-        } catch (Exception e) {
-            e.printStackTrace();
-            saveCurrentDownloadStatus();
-        }
+            RDownloadManager.getInstance().update(configurationKey, parentTaskCallback);
+           }
     }
 
     public void start() {
@@ -92,14 +54,16 @@ public class ThreadPoolManager {
         @Override
         public void run() {
             while (true) {
-                if (queue.isEmpty()) {
+                try {
+                    parentTaskCallback = mDatas.take();
+                    DownloadUtil.updateDownloadState(parentTaskCallback, parentTaskCallback.progress, DownloadConstants.DOWNLOADING);
+                    EventBus.getInstance().postProgress(configurationKey, parentTaskCallback);
+                    new TotalLengthTask(parentTaskCallback).run(configurationKey);
+                    for(DownloadTask task : parentTaskCallback.getDownloadTasks()){
+                        task.run(configurationKey);
+                    }
                     saveCurrentDownloadStatus();
                     parentTaskCallback = null;
-                    addNextTask();
-                }
-                try {
-                    IDownload runnable = queue.take();
-                    runnable.run(configurationKey);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }

@@ -19,12 +19,11 @@ class MainActivity : AppCompatActivity() {
         Log.i("file", getExternalFilesDir(Environment.DIRECTORY_MUSIC)?.absolutePath ?: "")
 
         setContentView(R.layout.activity_main)
-        val configration = Configuration.ConfirgurationBuilder()
+        val configration = RDownloadManager.getInstance()
+            .initBuilder()
             .setNetWorkType(NetworkType.WIFI)
             .setConfigurationKey("test")
             .build(applicationContext)
-        RDownloadManager.getInstance().setConfiguration(configration)
-
         EventBus.getInstance().register(this)
         init()
 
@@ -34,7 +33,7 @@ class MainActivity : AppCompatActivity() {
     private fun init() {
         findViewById<Button>(R.id.btn).setOnClickListener {
             val model = ParentTaskModel()
-            RDownloadManager.getInstance().getConfiguration("test").addParentTask(model);
+            RDownloadManager.getInstance().addParentTask("test", model)
             val intent = Intent(this@MainActivity, DonwloadDetailActivity::class.java)
             startActivity(intent)
         }

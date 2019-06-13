@@ -39,7 +39,7 @@ public class DonwloadDetailActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.paid_recycler_item_downloading_article);
         ButterKnife.bind(this, this);
-        List<ParentTaskCallback> list = RDownloadManager.getInstance().getConfiguration("test").getAllData();
+        List<ParentTaskCallback> list = RDownloadManager.getInstance().getAllData("test");
         if (list.size() > 0)
             parentTaskCallback = list.get(0);
         init();
@@ -49,9 +49,9 @@ public class DonwloadDetailActivity extends AppCompatActivity {
             public void onClick(View v) {
                 if (parentTaskCallback != null) {
                     if (parentTaskCallback.status == DownloadConstants.WAITING || parentTaskCallback.status == DownloadConstants.DOWNLOADING)
-                        RDownloadManager.getInstance().getConfiguration("test").pauseParentTask(parentTaskCallback);
+                        RDownloadManager.getInstance().pauseParentTask("test", parentTaskCallback);
                     else
-                        RDownloadManager.getInstance().getConfiguration("test").addParentTask(parentTaskCallback);
+                        RDownloadManager.getInstance().addParentTask("test", parentTaskCallback);
                 }
             }
         });

@@ -1,6 +1,7 @@
 package com.richzjc.rdownload.download.task;
 
 import android.util.Log;
+import com.richzjc.rdownload.data.model.ConfigurationParamsModel;
 import com.richzjc.rdownload.download.constant.DownloadConstants;
 import com.richzjc.rdownload.manager.Configuration;
 import com.richzjc.rdownload.manager.RDownloadManager;
@@ -36,8 +37,10 @@ final class OkhttpDownload {
     }
 
     public void download(String configurationKey, DownloadTask task) {
-        Configuration configuration = RDownloadManager.getInstance().getConfiguration(configurationKey);
-        File file = new File(DownloadUtil.getDownloadFilePath(configuration.paramsModel.context, task));
+        ConfigurationParamsModel model = RDownloadManager.getInstance().getConfigurationParamsModel(configurationKey);
+        if(model == null)
+            return;
+        File file = new File(DownloadUtil.getDownloadFilePath(model.context, task));
         if (!FileUtil.createFile(file.getAbsolutePath()))
             return;
         String range = "bytes=" + file.length() + "-";
@@ -57,7 +60,7 @@ final class OkhttpDownload {
     }
 
     private void writeFiles(String configurationKey, ResponseBody body, File file) {
-        ParentTaskCallback taskCallback = ThreadPoolManager.getInstance(configurationKey).getDownloadParentTask();
+        ParentTaskCallback taskCallback = RDownloadManager.getInstance().getCurrentDownloadPTask(configurationKey);
         try {
             RandomAccessFile accessFile = new RandomAccessFile(file, "rw");
             accessFile.seek(0);
@@ -102,8 +105,8 @@ final class OkhttpDownload {
     }
 
     private long getDownloadLength(String configurationKey, DownloadTask task) {
-        Configuration configuration = RDownloadManager.getInstance().getConfiguration(configurationKey);
-        File file = new File(DownloadUtil.getDownloadFilePath(configuration.paramsModel.context, task));
+        ConfigurationParamsModel model = RDownloadManager.getInstance().getConfigurationParamsModel(configurationKey);
+        File file = new File(DownloadUtil.getDownloadFilePath(model.context, task));
         if (file.exists())
             return file.length();
         else

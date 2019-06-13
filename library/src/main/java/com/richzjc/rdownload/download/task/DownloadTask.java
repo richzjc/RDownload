@@ -24,7 +24,9 @@ public class DownloadTask implements IDownload {
 
     @Override
     public void run(String configurationKey) {
-        ConfigurationParamsModel paramsModel = RDownloadManager.getInstance().getConfiguration(configurationKey).paramsModel;
+        ConfigurationParamsModel paramsModel = RDownloadManager.getInstance().getConfigurationParamsModel(configurationKey);
+        if(paramsModel == null)
+            return;
         if(paramsModel.networkType == NetworkType.WIFI){
             if(TDevice.isConnectWIFI(paramsModel.context))
                 OkhttpDownload.getInstance().download(configurationKey,this);
