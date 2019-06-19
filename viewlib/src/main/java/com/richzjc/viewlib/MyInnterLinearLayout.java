@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.view.View;
 import android.widget.LinearLayout;
 
 public class MyInnterLinearLayout extends LinearLayout {
@@ -28,8 +29,12 @@ public class MyInnterLinearLayout extends LinearLayout {
 
     @Override
     protected void onLayout(boolean changed, int l, int t, int r, int b) {
-        super.onLayout(changed, l, t, r, b);
-        Log.i("test", "inner + OnLayouter : " + this.getId());
+       // super.onLayout(changed, l, t, r, b);
+        View view = getChildAt(0);
+        int width = view.getMeasuredWidth();
+        int height = view.getMeasuredHeight();
+        Log.i("test", "width = " + width + "; height = " + height);
+        view.layout(0, -ScreenUtils.dip2px(getContext(), 20), view.getMeasuredWidth(), getHeight());
     }
 
     @Override
