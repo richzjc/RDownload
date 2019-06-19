@@ -11,15 +11,15 @@ import com.richzjc.rdownload.download.constant.NetworkType
 import com.richzjc.rdownload.manager.Configuration
 import com.richzjc.rdownload.manager.RDownloadManager
 import com.richzjc.rdownload.notification.rx.EventBus
+import me.ele.uetool.UETool
 
 class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         Log.i("file", getExternalFilesDir(Environment.DIRECTORY_MUSIC)?.absolutePath ?: "")
-
         setContentView(R.layout.activity_main)
-        val configration = RDownloadManager.getInstance()
+        RDownloadManager.getInstance()
             .initBuilder()
             .setNetWorkType(NetworkType.WIFI)
             .setConfigurationKey("test")

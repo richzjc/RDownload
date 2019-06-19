@@ -16,8 +16,11 @@ import com.richzjc.rdownload.notification.anotation.ProgressSubscribe;
 import com.richzjc.rdownload.notification.callback.ParentTaskCallback;
 import com.richzjc.rdownload.notification.rx.EventBus;
 import com.richzjc.rdownload.widget.ProgressWscnImageView;
+import org.json.JSONObject;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class DonwloadDetailActivity extends AppCompatActivity {
 
@@ -38,8 +41,17 @@ public class DonwloadDetailActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.paid_recycler_item_downloading_article);
+        Map<String, Long> map = new HashMap<>();
+        map.put("1", 1L);
+        map.put("2", 2L);
+        map.put("3", 3L);
+        map.put("4", 4L);
+        JSONObject jobj = new JSONObject(map);
+        Log.i("jobj", "jojb.tostring() = " + jobj.toString());
+
         ButterKnife.bind(this, this);
         List<ParentTaskCallback> list = RDownloadManager.getInstance().getAllData("test");
+        Log.i("download", "list.size = " + list.size());
         if (list.size() > 0)
             parentTaskCallback = list.get(0);
         init();
@@ -76,7 +88,7 @@ public class DonwloadDetailActivity extends AppCompatActivity {
 
     @ProgressSubscribe(configurationKey = "test")
     private void updateProgress(ParentTaskCallback taskCallback) {
-        if (TextUtils.equals(taskCallback.getParentTaskId(), parentTaskCallback.getParentTaskId())) {
+        if (parentTaskCallback != null && TextUtils.equals(taskCallback.getParentTaskId(), parentTaskCallback.getParentTaskId())) {
             init();
         }
     }

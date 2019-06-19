@@ -40,4 +40,8 @@ dependencies {
     implementation project(path: ':library')
     implementation 'com.jakewharton:butterknife:10.0.0'
     kapt 'com.jakewharton:butterknife-compiler:10.0.0'
+    debugImplementation 'me.ele:uetool:1.0.17'
+    releaseImplementation 'me.ele:uetool-no-op:1.0.17'
+//    implementation "com.squareup:javapoet:1.10.0"
+    api "io.reactivex.rxjava2:rxjava:2.1.14"
 }
