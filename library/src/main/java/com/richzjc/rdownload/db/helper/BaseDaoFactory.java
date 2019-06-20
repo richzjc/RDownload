@@ -1,9 +1,7 @@
 package com.richzjc.rdownload.db.helper;
 
-
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
-
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
@@ -53,5 +51,4 @@ public class BaseDaoFactory {
             return baseDao;
         }
     }
-
 }

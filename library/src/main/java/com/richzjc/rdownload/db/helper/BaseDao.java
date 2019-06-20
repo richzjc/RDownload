@@ -69,6 +69,7 @@ public class BaseDao<T extends ParentTaskCallback> implements IBaseDao<T> {
         stringBuffer.append("totalLength" + " LONG ,");
         stringBuffer.append("downloadLength" + " LONG ,");
         //获取beanClazz对象的所有成员变量
+        //TODO 添加了DbField注解的属性用一个json保存起来存入数据库里面
         Field[] declaredFields = beanClazz.getDeclaredFields();
         DbField dbField;
         for (Field declaredField : declaredFields) {
