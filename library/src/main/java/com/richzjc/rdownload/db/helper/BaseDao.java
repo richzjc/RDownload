@@ -8,28 +8,23 @@ import android.util.Log;
 import com.richzjc.rdownload.db.anotations.DbField;
 import com.richzjc.rdownload.db.anotations.DbTable;
 import com.richzjc.rdownload.notification.callback.ParentTaskCallback;
-
 import java.lang.reflect.Field;
 import java.util.*;
 
 public class BaseDao<T extends ParentTaskCallback> implements IBaseDao<T> {
-
-    // 持有数据库引用
-    private SQLiteDatabase sqLiteDatabase;
-
+    //数据库的路径
+    String sqldbPath;
     // 表名
     private String tableName;
-
     private Class<T> beanClazz;
-
     // 缓存map key（数据库对应的字段名），value（成员变量）
     private HashMap<String, Field> cacheMap;
-
     // 是否已经初始化
     private boolean isInit = false;
 
-    protected boolean init(SQLiteDatabase sqLiteDatabase, Class<T> beanClazz) {
-        this.sqLiteDatabase = sqLiteDatabase;
+    protected boolean init(String sqlDbPath, Class<T> beanClazz) {
+        this.sqldbPath = sqlDbPath;
+        SQLiteDatabase sqLiteDatabase = SQLiteDatabase.openOrCreateDatabase(sqldbPath,null);
         this.beanClazz = beanClazz;
         if (!isInit) {
             // 先要得到表名
@@ -46,6 +41,7 @@ public class BaseDao<T extends ParentTaskCallback> implements IBaseDao<T> {
             // 创建数据表
             sqLiteDatabase.execSQL(getCreateTableSql());
             isInit = true;
+            sqLiteDatabase.close();
         }
         return false;
     }
@@ -103,6 +99,7 @@ public class BaseDao<T extends ParentTaskCallback> implements IBaseDao<T> {
 
     @Override
     public void insert(String configurationKey, T bean) {
+        SQLiteDatabase sqLiteDatabase = SQLiteDatabase.openOrCreateDatabase(sqldbPath,null);
         List<T> list = query(new String[]{"parentTaskId", "progress", "status"}, "configurationKey = ? and parentTaskId = ?", new String[]{configurationKey, bean.getParentTaskId()});
         if (list.size() <= 0) {
             Map<String, String> map = getValue(configurationKey, bean);
@@ -115,14 +112,18 @@ public class BaseDao<T extends ParentTaskCallback> implements IBaseDao<T> {
             bean.totalLength = list.get(0).totalLength;
             bean.downloadLength = list.get(0).downloadLength;
         }
+        sqLiteDatabase.close();
     }
 
     @Override
     public void update(ContentValues values, String whereClause, String[] whereArgs){
+        SQLiteDatabase sqLiteDatabase = SQLiteDatabase.openOrCreateDatabase(sqldbPath,null);
         sqLiteDatabase.update(tableName, values, whereClause, whereArgs);
+        sqLiteDatabase.close();
     }
 
     public List<T> query(String[] columns, String selection, String[] selectionArgs) {
+        SQLiteDatabase sqLiteDatabase = SQLiteDatabase.openOrCreateDatabase(sqldbPath,null);
         List<T> list = new ArrayList<>();
         Cursor cursor = sqLiteDatabase.query(tableName, columns, selection, selectionArgs, null, null, null);
         Log.i("download", cursor.getCount() + "");
@@ -170,6 +171,7 @@ public class BaseDao<T extends ParentTaskCallback> implements IBaseDao<T> {
             }
             while (cursor.moveToNext());
         }
+        sqLiteDatabase.close();
         return list;
     }
 

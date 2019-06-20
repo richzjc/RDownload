@@ -1,6 +1,7 @@
 package com.richzjc.viewlib;
 
 import android.content.Context;
+import android.graphics.Canvas;
 import android.graphics.Color;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -23,6 +24,18 @@ public class MyView extends View {
     public MyView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         setBackgroundColor(Color.RED);
+        setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                invalidate();
+            }
+        });
+    }
+
+    @Override
+    protected void onDraw(Canvas canvas) {
+        super.onDraw(canvas);
+        Log.i("test", "MyView: onDraw");
     }
 
     @Override
@@ -32,7 +45,7 @@ public class MyView extends View {
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        Log.i("myView", "onTouchEvent");
+        Log.i("test", "myView : onTouchEvent");
 
         int x = (int) event.getX();
         int y = (int) event.getY();
